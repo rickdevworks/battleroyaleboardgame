@@ -666,6 +666,23 @@
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
         }
         
+        /* NEW: Aim line styling */
+        .aim-line {
+            position: absolute;
+            background: #ffeb3b;
+            opacity: 0.7;
+            height: 3px;
+            z-index: 5;
+            transform-origin: 0 0;
+            pointer-events: none;
+        }
+        
+        /* NEW: Visual feedback for aiming mode */
+        .aiming-mode #game-canvas {
+            box-shadow: 0 0 20px #ffeb3b, 0 0 30px rgba(255, 235, 59, 0.5);
+            transition: box-shadow 0.3s ease;
+        }
+        
         /* Responsive adjustments for landscape */
         @media (orientation: portrait) {
             #portrait-warning {
@@ -690,17 +707,22 @@
             }
             
             .mobile-controls-group {
-                padding: 0 10px;
+                padding: 0 15px;
             }
             
             .directional-pad, .action-buttons {
-                width: 160px;
+                width: 170px;
             }
             
             .mobile-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
+                width: 65px;
+                height: 65px;
+                font-size: 26px;
+            }
+            
+            .mobile-btn:active {
+                transform: scale(0.9);
+                transition: transform 0.1s;
             }
             
             .dice-display {
@@ -1140,15 +1162,23 @@
                 this.currentHouse = null;
                 this.viewingHouse = null;
                 
-                // Aim state
+                // Fixed Aim state - completely rebuilt
                 this.aiming = false;
                 this.aim = {
-                    x: null,
-                    y: null,
-                    dx: null,
-                    dy: null,
-                    steps: 0
+                    startX: null,     // Player's starting position
+                    startY: null,
+                    currentX: null,   // Current aim position
+                    currentY: null,
+                    directionX: 0,    // Current direction
+                    directionY: 0,
+                    steps: 0,         // Steps taken from player
+                    maxSteps: 0       // Maximum range
                 };
+                
+                // Add touch controls for mobile aiming
+                this.touchStartX = null;
+                this.touchStartY = null;
+                this.lastTouchTime = 0;
                 
                 // Store canvas position for aiming calculations
                 this.canvasRect = null;
@@ -1240,6 +1270,18 @@
                 this.viewingHouse = null;
                 this.aiming = false;
                 
+                // Reset aim state
+                this.aim = {
+                    startX: null,
+                    startY: null,
+                    currentX: null,
+                    currentY: null,
+                    directionX: 0,
+                    directionY: 0,
+                    steps: 0,
+                    maxSteps: 0
+                };
+                
                 // Clear overlays
                 this.aimOverlay.innerHTML = '';
                 this.shotgunPreview.innerHTML = '';
@@ -1294,6 +1336,11 @@
                 
                 // Keyboard controls - ALWAYS ENABLED
                 window.addEventListener('keydown', (e) => {
+                    // Prevent arrow key scrolling
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                    
                     const keyMap = {
                         'ArrowUp': [0, -1], 'w': [0, -1],
                         'ArrowDown': [0, 1], 's': [0, 1],
@@ -1304,14 +1351,144 @@
                     const dir = keyMap[e.key];
                     if (!dir) return;
                     
-                    e.preventDefault();
-                    
                     if (this.aiming) {
                         this.moveAim(...dir);
                     } else if (this.movesLeft > 0 || this.isIndoor) {
                         this.movePlayer(...dir);
                     }
                 });
+                
+                // Add click/tap aiming for desktop/mobile
+                this.canvas.addEventListener('click', (e) => {
+                    if (this.aiming && !this.isIndoor) {
+                        this.handleCanvasClick(e);
+                    }
+                });
+                
+                // Add touch events for mobile aiming
+                this.setupTouchControls();
+            }
+            
+            setupTouchControls() {
+                const canvas = this.canvas;
+                if (!canvas) return;
+                
+                // Prevent default touch behaviors
+                canvas.addEventListener('touchstart', (e) => {
+                    if (this.aiming) {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        this.touchStartX = touch.clientX;
+                        this.touchStartY = touch.clientY;
+                        this.lastTouchTime = Date.now();
+                        
+                        // If we're in aiming mode on mobile, handle the touch
+                        if (this.aiming && !this.isIndoor) {
+                            const rect = canvas.getBoundingClientRect();
+                            const x = Math.floor((touch.clientX - rect.left) / this.TILE_SIZE);
+                            const y = Math.floor((touch.clientY - rect.top) / this.TILE_SIZE);
+                            
+                            if (x >= 0 && x < this.GRID_SIZE && y >= 0 && y < this.GRID_SIZE) {
+                                this.setAimTarget(x, y);
+                            }
+                        }
+                    }
+                }, { passive: false });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    if (this.aiming && this.touchStartX !== null && this.touchStartY !== null) {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const deltaX = touch.clientX - this.touchStartX;
+                        const deltaY = touch.clientY - this.touchStartY;
+                        
+                        // Determine swipe direction for aim movement
+                        if (Math.abs(deltaX) > 20 || Math.abs(deltaY) > 20) {
+                            let dx = 0, dy = 0;
+                            
+                            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                                dx = deltaX > 0 ? 1 : -1;
+                            } else {
+                                dy = deltaY > 0 ? 1 : -1;
+                            }
+                            
+                            this.moveAim(dx, dy);
+                            
+                            // Reset touch start for continuous movement
+                            this.touchStartX = touch.clientX;
+                            this.touchStartY = touch.clientY;
+                        }
+                    }
+                }, { passive: false });
+                
+                canvas.addEventListener('touchend', (e) => {
+                    if (this.aiming && this.touchStartX !== null) {
+                        e.preventDefault();
+                        
+                        // Check for tap (quick release) to shoot
+                        if (Date.now() - this.lastTouchTime < 300 && Math.abs(this.touchStartX - e.changedTouches[0].clientX) < 10 && Math.abs(this.touchStartY - e.changedTouches[0].clientY) < 10) {
+                            // This was a tap, not a swipe - trigger shoot
+                            setTimeout(() => this.shoot(), 50);
+                        }
+                        
+                        this.touchStartX = null;
+                        this.touchStartY = null;
+                    }
+                }, { passive: false });
+            }
+            
+            handleCanvasClick(e) {
+                if (!this.aiming || this.isIndoor) return;
+                
+                // Get click position relative to canvas
+                const rect = this.canvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) / this.TILE_SIZE);
+                const y = Math.floor((e.clientY - rect.top) / this.TILE_SIZE);
+                
+                // Check if click is within bounds
+                if (x >= 0 && x < this.GRID_SIZE && y >= 0 && y < this.GRID_SIZE) {
+                    this.setAimTarget(x, y);
+                }
+            }
+            
+            setAimTarget(targetX, targetY) {
+                const player = this.players[this.currentPlayer];
+                const weapon = this.weapons[player.weapon];
+                let range = weapon.range;
+                
+                // Apply scope bonus
+                player.gear.forEach(g => {
+                    if (g.effect === 'rangeBonus') range += g.value;
+                });
+                
+                // Calculate direction and distance
+                const dx = targetX - this.aim.startX;
+                const dy = targetY - this.aim.startY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= range) {
+                    // Set aim to clicked position
+                    this.aim.currentX = targetX;
+                    this.aim.currentY = targetY;
+                    this.aim.steps = Math.round(distance);
+                    
+                    // Determine primary direction
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        this.aim.directionX = dx > 0 ? 1 : -1;
+                        this.aim.directionY = 0;
+                    } else {
+                        this.aim.directionX = 0;
+                        this.aim.directionY = dy > 0 ? 1 : -1;
+                    }
+                    
+                    this.updateAimCursor();
+                    this.updateShotgunPreview();
+                    this.playSound(400);
+                } else {
+                    // Out of range - show error
+                    alert(`Target is out of range! Maximum range is ${range} tiles.`);
+                    this.playSound(200, 0.1, 'square');
+                }
             }
             
             initAudio() {
@@ -1672,6 +1849,14 @@
             }
             
             updateControlStatus() {
+                // Update visual aiming mode indicator
+                const gameContainer = document.getElementById('game-container');
+                if (this.aiming) {
+                    gameContainer.classList.add('aiming-mode');
+                } else {
+                    gameContainer.classList.remove('aiming-mode');
+                }
+                
                 // Update mobile UI
                 updateMobileUI();
             }
@@ -1763,7 +1948,7 @@
                         }
                     } else {
                         if (modeEl) modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                        if (statusEl) statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
+                        if (statusEl) statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot". Click on grid to set target.';
                     }
                 }
                 
@@ -2284,28 +2469,37 @@
                 if (this.aiming || this.hasShot) return;
                 
                 const player = this.players[this.currentPlayer];
+                const weapon = this.weapons[player.weapon];
+                
                 this.aiming = true;
                 
-                // FIXED: Always start aim at player's current position
+                // Set starting position (player's current position)
                 if (this.isIndoor && player.indoorPos) {
-                    this.aim = {
-                        x: player.indoorPos.x,
-                        y: player.indoorPos.y,
-                        dx: null,
-                        dy: null,
-                        steps: 0
-                    };
+                    this.aim.startX = player.indoorPos.x;
+                    this.aim.startY = player.indoorPos.y;
+                    this.aim.currentX = player.indoorPos.x;
+                    this.aim.currentY = player.indoorPos.y;
                 } else {
-                    this.aim = {
-                        x: player.x,
-                        y: player.y,
-                        dx: null,
-                        dy: null,
-                        steps: 0
-                    };
+                    this.aim.startX = player.x;
+                    this.aim.startY = player.y;
+                    this.aim.currentX = player.x;
+                    this.aim.currentY = player.y;
                 }
                 
+                // Reset direction and steps
+                this.aim.directionX = 0;
+                this.aim.directionY = 0;
+                this.aim.steps = 0;
+                
+                // Calculate max range with gear bonuses
+                let range = weapon.range;
+                player.gear.forEach(g => {
+                    if (g.effect === 'rangeBonus') range += g.value;
+                });
+                this.aim.maxSteps = range;
+                
                 this.updateAimCursor();
+                this.updateShotgunPreview();
                 this.playSound(600);
                 this.updateUI();
             }
@@ -2314,28 +2508,38 @@
                 if (!this.aiming) return;
                 
                 const player = this.players[this.currentPlayer];
-                const weapon = this.weapons[player.weapon];
                 
-                // Apply scope bonus
-                let range = weapon.range;
-                player.gear.forEach(g => {
-                    if (g.effect === 'rangeBonus') range += g.value;
-                });
-                
-                // Set direction on first move
-                if (this.aim.dx === null && this.aim.dy === null) {
-                    this.aim.dx = dx;
-                    this.aim.dy = dy;
+                // If no direction set yet, set it
+                if (this.aim.directionX === 0 && this.aim.directionY === 0) {
+                    this.aim.directionX = dx;
+                    this.aim.directionY = dy;
                 }
                 
-                // Can only move in chosen direction
-                if (dx !== this.aim.dx || dy !== this.aim.dy) return;
+                // Check if trying to change direction
+                if ((dx !== 0 && dx !== this.aim.directionX) || (dy !== 0 && dy !== this.aim.directionY)) {
+                    // Allow direction change only if not already moving in opposite direction
+                    if (dx !== 0 && this.aim.directionX !== 0 && dx !== this.aim.directionX) {
+                        this.aim.directionX = dx;
+                        this.aim.directionY = 0;
+                        this.resetAimToStart();
+                    } else if (dy !== 0 && this.aim.directionY !== 0 && dy !== this.aim.directionY) {
+                        this.aim.directionX = 0;
+                        this.aim.directionY = dy;
+                        this.resetAimToStart();
+                    } else if ((dx !== 0 && this.aim.directionY !== 0) || (dy !== 0 && this.aim.directionX !== 0)) {
+                        // Switching from horizontal to vertical or vice versa
+                        this.aim.directionX = dx;
+                        this.aim.directionY = dy;
+                        this.resetAimToStart();
+                    }
+                    return;
+                }
                 
-                // Check range
-                if (this.aim.steps >= range) return;
+                // Check range limit
+                if (this.aim.steps >= this.aim.maxSteps) return;
                 
-                const newX = this.aim.x + dx;
-                const newY = this.aim.y + dy;
+                const newX = this.aim.currentX + (dx || this.aim.directionX);
+                const newY = this.aim.currentY + (dy || this.aim.directionY);
                 
                 // Check bounds
                 let maxX, maxY;
@@ -2350,13 +2554,29 @@
                 }
                 
                 // Update aim position
-                this.aim.x = newX;
-                this.aim.y = newY;
+                this.aim.currentX = newX;
+                this.aim.currentY = newY;
                 this.aim.steps++;
                 
                 this.updateAimCursor();
                 this.updateShotgunPreview();
                 this.playSound(400);
+            }
+            
+            resetAimToStart() {
+                const player = this.players[this.currentPlayer];
+                
+                if (this.isIndoor && player.indoorPos) {
+                    this.aim.currentX = player.indoorPos.x;
+                    this.aim.currentY = player.indoorPos.y;
+                } else {
+                    this.aim.currentX = player.x;
+                    this.aim.currentY = player.y;
+                }
+                
+                this.aim.steps = 0;
+                this.updateAimCursor();
+                this.updateShotgunPreview();
             }
             
             updateAimCursor() {
@@ -2371,17 +2591,16 @@
                     // Center the indoor map on canvas
                     const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
                     const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
-                    x = this.aim.x * this.TILE_SIZE + indoorOffsetX;
-                    y = this.aim.y * this.TILE_SIZE + indoorOffsetY;
+                    x = this.aim.currentX * this.TILE_SIZE + indoorOffsetX;
+                    y = this.aim.currentY * this.TILE_SIZE + indoorOffsetY;
                     tileSize = this.TILE_SIZE;
                 } else {
-                    x = this.aim.x * this.TILE_SIZE;
-                    y = this.aim.y * this.TILE_SIZE;
+                    x = this.aim.currentX * this.TILE_SIZE;
+                    y = this.aim.currentY * this.TILE_SIZE;
                     tileSize = this.TILE_SIZE;
                 }
                 
-                // FIXED: Ensure cursor stays within canvas bounds
-                // Create new cursor
+                // Create main aim cursor
                 const cursor = document.createElement('div');
                 cursor.className = 'aim-cell';
                 cursor.style.left = x + 'px';
@@ -2390,6 +2609,53 @@
                 cursor.style.height = tileSize + 'px';
                 
                 this.aimOverlay.appendChild(cursor);
+                
+                // Draw line from player to aim cursor
+                this.drawAimLine();
+            }
+            
+            drawAimLine() {
+                if (!this.aiming) return;
+                
+                const player = this.players[this.currentPlayer];
+                let startX, startY, endX, endY;
+                
+                if (this.isIndoor && player.indoorPos) {
+                    const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    startX = player.indoorPos.x * this.TILE_SIZE + indoorOffsetX + this.TILE_SIZE / 2;
+                    startY = player.indoorPos.y * this.TILE_SIZE + indoorOffsetY + this.TILE_SIZE / 2;
+                    endX = this.aim.currentX * this.TILE_SIZE + indoorOffsetX + this.TILE_SIZE / 2;
+                    endY = this.aim.currentY * this.TILE_SIZE + indoorOffsetY + this.TILE_SIZE / 2;
+                } else {
+                    startX = player.x * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    startY = player.y * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    endX = this.aim.currentX * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    endY = this.aim.currentY * this.TILE_SIZE + this.TILE_SIZE / 2;
+                }
+                
+                // Create line element
+                const line = document.createElement('div');
+                line.className = 'aim-line';
+                line.style.position = 'absolute';
+                line.style.left = startX + 'px';
+                line.style.top = startY + 'px';
+                
+                // Calculate line length and angle
+                const dx = endX - startX;
+                const dy = endY - startY;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.height = '3px';
+                line.style.backgroundColor = '#ffeb3b';
+                line.style.opacity = '0.7';
+                line.style.transformOrigin = '0 0';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.zIndex = '5';
+                
+                this.aimOverlay.appendChild(line);
             }
             
             updateShotgunPreview() {
@@ -2402,14 +2668,14 @@
                 const weapon = this.weapons[player.weapon];
                 
                 // Only show preview for shotgun
-                if (weapon.type !== 'shotgun' || this.aim.dx === null) return;
+                if (weapon.type !== 'shotgun' || (this.aim.directionX === 0 && this.aim.directionY === 0)) return;
                 
                 // Get shotgun spread pattern
-                const patterns = this.getShotgunPattern(this.aim.dx, this.aim.dy);
+                const patterns = this.getShotgunPattern(this.aim.directionX, this.aim.directionY);
                 
                 patterns.forEach(([dx, dy]) => {
-                    const x = this.aim.x + dx;
-                    const y = this.aim.y + dy;
+                    const x = this.aim.currentX + dx;
+                    const y = this.aim.currentY + dy;
                     
                     // Check bounds
                     let maxX, maxY;
@@ -2447,10 +2713,14 @@
             }
             
             getShotgunPattern(dx, dy) {
-                if (dx === 0) {
-                    return [[0, dy], [-1, dy], [1, dy]];
-                } else if (dy === 0) {
-                    return [[dx, 0], [dx, -1], [dx, 1]];
+                if (dx === 0 && dy === -1) { // Up
+                    return [[0, -1], [-1, -1], [1, -1]];
+                } else if (dx === 0 && dy === 1) { // Down
+                    return [[0, 1], [-1, 1], [1, 1]];
+                } else if (dx === -1 && dy === 0) { // Left
+                    return [[-1, 0], [-1, -1], [-1, 1]];
+                } else if (dx === 1 && dy === 0) { // Right
+                    return [[1, 0], [1, -1], [1, 1]];
                 }
                 return [[dx, dy]];
             }
@@ -2460,6 +2730,12 @@
                 
                 const shooter = this.players[this.currentPlayer];
                 const weapon = this.weapons[shooter.weapon];
+                
+                // Set aim target for linear weapons
+                if (weapon.type !== 'shotgun') {
+                    this.aim.currentX = this.aim.currentX;
+                    this.aim.currentY = this.aim.currentY;
+                }
                 
                 if (weapon.type === 'shotgun') {
                     this.fireShotgun(shooter, weapon);
@@ -2486,7 +2762,7 @@
             }
             
             fireLinear(shooter, weapon) {
-                const target = this.findTargetAt(shooter, this.aim.x, this.aim.y);
+                const target = this.findTargetAt(shooter, this.aim.currentX, this.aim.currentY);
                 
                 if (target) {
                     if (this.checkLineOfSight(shooter, target)) {
@@ -2495,18 +2771,21 @@
                         alert('Shot blocked by cover!');
                         this.playSound(200, 0.1, 'square');
                     }
+                } else {
+                    alert('No target at aim location!');
+                    this.playSound(200, 0.1, 'square');
                 }
             }
             
             fireShotgun(shooter, weapon) {
-                if (this.aim.dx === null) return;
+                if (this.aim.directionX === 0 && this.aim.directionY === 0) return;
                 
-                const patterns = this.getShotgunPattern(this.aim.dx, this.aim.dy);
+                const patterns = this.getShotgunPattern(this.aim.directionX, this.aim.directionY);
                 let hitCount = 0;
                 
                 patterns.forEach(([dx, dy]) => {
-                    const targetX = this.aim.x + dx;
-                    const targetY = this.aim.y + dy;
+                    const targetX = this.aim.currentX + dx;
+                    const targetY = this.aim.currentY + dy;
                     
                     const target = this.findTargetAt(shooter, targetX, targetY);
                     if (target && this.checkLineOfSight(shooter, target)) {
@@ -2518,13 +2797,14 @@
                 if (hitCount > 0) {
                     this.playSound(300, 0.2, 'sawtooth');
                 } else {
+                    alert('Shotgun spread missed all targets!');
                     this.playSound(200, 0.1, 'square');
                 }
             }
             
             fireRapid(shooter, weapon) {
                 // SMG fires twice
-                const target = this.findTargetAt(shooter, this.aim.x, this.aim.y);
+                const target = this.findTargetAt(shooter, this.aim.currentX, this.aim.currentY);
                 
                 if (target && this.checkLineOfSight(shooter, target)) {
                     this.applyDamage(shooter, target, weapon.damage);
@@ -2533,18 +2813,20 @@
                     }, 200);
                     this.playSound(400, 0.3, 'sawtooth');
                 } else {
+                    alert('No target at aim location!');
                     this.playSound(200, 0.1, 'square');
                 }
             }
             
             fireFlamethrower(shooter, weapon) {
                 // Flamethrower ignores cover
-                const target = this.findTargetAt(shooter, this.aim.x, this.aim.y);
+                const target = this.findTargetAt(shooter, this.aim.currentX, this.aim.currentY);
                 
                 if (target) {
                     this.applyDamage(shooter, target, weapon.damage);
                     this.playSound(200, 0.4, 'sawtooth');
                 } else {
+                    alert('No target at aim location!');
                     this.playSound(200, 0.1, 'square');
                 }
             }
@@ -2694,11 +2976,14 @@
                 this.hasRolled = false;
                 this.aiming = false;
                 this.aim = {
-                    x: null,
-                    y: null,
-                    dx: null,
-                    dy: null,
-                    steps: 0
+                    startX: null,
+                    startY: null,
+                    currentX: null,
+                    currentY: null,
+                    directionX: 0,
+                    directionY: 0,
+                    steps: 0,
+                    maxSteps: 0
                 };
                 this.aimOverlay.innerHTML = '';
                 this.shotgunPreview.innerHTML = '';
