@@ -278,6 +278,13 @@
         
         #mobile-controls {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
         
         /* ADDED: Roll dice button highlight animation */
@@ -448,6 +455,200 @@
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
         }
         
+        /* Mobile-specific styles */
+        .mobile-only {
+            display: none;
+        }
+        
+        .desktop-only {
+            display: block;
+        }
+        
+        /* Dice roll display for mobile */
+        #dice-roll-display {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffeb3b;
+            z-index: 100;
+            border: 2px solid #ff9800;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+        
+        /* Mobile control buttons */
+        .mobile-control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .mobile-control-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .mobile-control-btn:disabled {
+            background: #666;
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .mobile-control-btn.dice {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+        }
+        
+        .mobile-control-btn.aim {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+        
+        .mobile-control-btn.shoot {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+        
+        .mobile-control-btn.end-turn {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+        }
+        
+        .mobile-control-btn.reset {
+            background: linear-gradient(135deg, #ff5722, #e64a19);
+        }
+        
+        /* Mobile arrow controls (Nintendo-style) */
+        .mobile-arrow-controls {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            width: 160px;
+            height: 160px;
+        }
+        
+        .mobile-arrow-btn {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .mobile-arrow-btn:active {
+            background: rgba(255,255,255,0.25);
+            transform: scale(0.95);
+        }
+        
+        .mobile-arrow-btn.up {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mobile-arrow-btn.down {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .mobile-arrow-btn.left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .mobile-arrow-btn.right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* Mobile info panel */
+        #mobile-info-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 10px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            display: none;
+        }
+        
+        .mobile-info-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .mobile-player-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .mobile-health-bar {
+            width: 60px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .mobile-health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+        }
+        
+        #mobile-menu-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.3);
+            border: 2px solid #4cc9f0;
+            color: white;
+            font-size: 24px;
+            z-index: 1001;
+            display: none;
+        }
+        
         @media (max-width: 1200px) {
             body {
                 flex-direction: column;
@@ -459,9 +660,141 @@
                 border-right: none;
                 border-bottom: 2px solid #4cc9f0;
             }
+        }
+        
+        /* Force landscape on mobile */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body {
+                transform: rotate(90deg);
+                transform-origin: left top;
+                width: 100vh;
+                height: 100vw;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                overflow-x: hidden;
+            }
+            
+            #rules-modal .modal-content {
+                transform: rotate(-90deg);
+                transform-origin: center center;
+                max-height: 80vw;
+                max-width: 80vh;
+            }
+            
+            #rules-modal h2 {
+                font-size: 1.5em;
+            }
+            
+            #rules-modal p, #rules-modal li {
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-only {
+                display: block;
+            }
+            
+            .desktop-only {
+                display: none;
+            }
+            
+            #sidebar {
+                display: none;
+            }
+            
+            #game-container {
+                padding: 5px;
+                width: 100vw;
+                height: 100vh;
+            }
+            
+            #game-canvas {
+                width: 95vw !important;
+                height: 95vw !important;
+                max-width: 95vh;
+                max-height: 95vh;
+            }
             
             #mobile-controls {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            #mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            #mobile-info-panel {
                 display: block;
+            }
+            
+            /* Mobile action buttons (right side) */
+            #mobile-action-buttons {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .mobile-action-btn {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                border: none;
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #4361ee, #3a0ca3);
+                color: white;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+            
+            .mobile-action-btn:active {
+                transform: scale(0.95);
+            }
+            
+            .mobile-action-btn:disabled {
+                background: #666;
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+            
+            .mobile-info-expanded {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 10px;
+                right: 10px;
+                background: rgba(0,0,0,0.9);
+                border-radius: 10px;
+                padding: 15px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(76, 201, 240, 0.5);
+                z-index: 1000;
+            }
+            
+            .mobile-info-expanded.active {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+            
+            .mobile-expanded-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin: 15px 0;
+                font-size: 14px;
             }
         }
     </style>
@@ -504,7 +837,7 @@
                 <div class="weapon-card shotgun-card">
                     <strong>🔫 Shotgun</strong><br>
                     Damage: 30 | Range: 3<br>
-                    Spread pattern (3 tiles)
+                    Short-range spread
                 </div>
                 <div class="weapon-card smg-card">
                     <strong>🔫 SMG</strong><br>
@@ -581,7 +914,7 @@
     </div>
 
     <!-- Main Game UI -->
-    <div id="sidebar">
+    <div id="sidebar" class="desktop-only">
         <div class="player-info">
             <h3>🎮 BATTLE ROYALE</h3>
             <div class="health-bar-container">
@@ -590,7 +923,6 @@
             </div>
             
             <div class="stats-grid">
-                <!-- CHANGED: Current player text now changes color -->
                 <div class="stat-label">Current Player:</div>
                 <div class="stat-value" id="current-player" style="color: #ff5252;">1</div>
                 
@@ -633,7 +965,6 @@
                 ⏭️ End Turn
             </button>
             
-            <!-- ADDED: Reset button in main controls -->
             <button id="reset-game" onclick="game.resetGame()" class="reset">
                 🔄 Reset Game
             </button>
@@ -651,6 +982,9 @@
             Player 1's Turn
         </div>
         
+        <!-- Dice roll display for mobile -->
+        <div id="dice-roll-display"></div>
+        
         <canvas id="game-canvas" width="720" height="720"></canvas>
         <div id="aim-overlay"></div>
         <div id="shotgun-preview"></div>
@@ -665,20 +999,68 @@
             <div>Move onto the 🚪 door tile to exit</div>
         </div>
         
-        <!-- Mobile Controls -->
-        <div id="mobile-controls">
-            <div style="position: absolute; bottom: 80px; left: 20px; right: 20px;">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 15px;">
-                    <div></div>
-                    <button onclick="game.movePlayer(0, -1)" style="padding: 20px; font-size: 24px;">↑</button>
-                    <div></div>
-                    <button onclick="game.movePlayer(-1, 0)" style="padding: 20px; font-size: 24px;">←</button>
-                    <button onclick="game.enterAim()" style="padding: 20px; background: #ff9800;">🎯</button>
-                    <button onclick="game.movePlayer(1, 0)" style="padding: 20px; font-size: 24px;">→</button>
-                    <div></div>
-                    <button onclick="game.movePlayer(0, 1)" style="padding: 20px; font-size: 24px;">↓</button>
-                    <div></div>
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-toggle" onclick="game.toggleMobileMenu()">☰</button>
+        
+        <!-- Mobile Info Panel -->
+        <div id="mobile-info-panel">
+            <div class="mobile-info-compact">
+                <div class="mobile-player-info">
+                    <div id="mobile-player-color" class="mobile-player-color" style="background: #ff5252;"></div>
+                    <div>
+                        <div id="mobile-player-name" style="font-weight: bold; font-size: 16px;">P1</div>
+                        <div id="mobile-player-hp" style="font-size: 12px; color: #4CAF50;">100 HP</div>
+                    </div>
                 </div>
+                <div id="mobile-moves-left" style="font-weight: bold; color: #4cc9f0; font-size: 18px;">0</div>
+            </div>
+            
+            <!-- Expanded mobile info (hidden by default) -->
+            <div id="mobile-info-expanded" class="mobile-info-expanded">
+                <h4 style="margin: 0 0 10px 0; color: #4cc9f0; text-align: center;">Player Info</h4>
+                <div class="mobile-expanded-stats">
+                    <div>Weapon:</div>
+                    <div id="mobile-weapon">Pistol</div>
+                    <div>Armor:</div>
+                    <div id="mobile-armor">None</div>
+                    <div>Gear:</div>
+                    <div id="mobile-gear">-</div>
+                    <div>Moves Left:</div>
+                    <div id="mobile-moves-full">0</div>
+                </div>
+                <div style="margin-top: 15px; font-size: 12px; color: #aaa; text-align: center;">
+                    Tap outside to close
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div id="mobile-controls" class="mobile-only">
+            <!-- Arrow Controls (Nintendo-style, left side) -->
+            <div class="mobile-arrow-controls">
+                <button class="mobile-arrow-btn up" onclick="game.movePlayer(0, -1)">↑</button>
+                <button class="mobile-arrow-btn down" onclick="game.movePlayer(0, 1)">↓</button>
+                <button class="mobile-arrow-btn left" onclick="game.movePlayer(-1, 0)">←</button>
+                <button class="mobile-arrow-btn right" onclick="game.movePlayer(1, 0)">→</button>
+            </div>
+            
+            <!-- Action Buttons (right side) -->
+            <div id="mobile-action-buttons">
+                <button class="mobile-action-btn dice" onclick="game.rollDice()" id="mobile-roll-dice">
+                    🎲
+                </button>
+                <button class="mobile-action-btn aim" onclick="game.enterAim()" id="mobile-enter-aim">
+                    🎯
+                </button>
+                <button class="mobile-action-btn shoot" onclick="game.shoot()" id="mobile-shoot">
+                    💥
+                </button>
+                <button class="mobile-action-btn end-turn" onclick="game.endTurn()" id="mobile-end-turn">
+                    ⏭️
+                </button>
+                <button class="mobile-action-btn reset" onclick="game.resetGame()" id="mobile-reset-game">
+                    🔄
+                </button>
             </div>
         </div>
     </div>
@@ -711,11 +1093,128 @@
                     steps: 0
                 };
                 
+                // Mobile state
+                this.mobileMenuOpen = false;
+                this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
                 // Initialize audio first
                 this.initAudio();
                 
                 // Show rules modal
                 document.getElementById('rules-modal').style.display = 'flex';
+                
+                // Setup mobile if needed
+                if (this.isMobile) {
+                    this.setupMobileUI();
+                }
+            }
+            
+            setupMobileUI() {
+                // Force landscape mode
+                if (window.innerHeight > window.innerWidth) {
+                    this.showLandscapeWarning();
+                }
+                
+                // Setup mobile info panel click
+                const mobileInfoPanel = document.getElementById('mobile-info-panel');
+                if (mobileInfoPanel) {
+                    mobileInfoPanel.addEventListener('click', (e) => {
+                        if (e.target === mobileInfoPanel || e.target.closest('.mobile-info-compact')) {
+                            this.toggleMobileInfo();
+                        }
+                    });
+                }
+                
+                // Close expanded info when clicking outside
+                document.addEventListener('click', (e) => {
+                    const expandedInfo = document.getElementById('mobile-info-expanded');
+                    const mobileInfoPanel = document.getElementById('mobile-info-panel');
+                    const menuToggle = document.getElementById('mobile-menu-toggle');
+                    
+                    if (expandedInfo && expandedInfo.classList.contains('active') &&
+                        !mobileInfoPanel.contains(e.target) && !menuToggle.contains(e.target)) {
+                        this.toggleMobileInfo();
+                    }
+                });
+                
+                // Update canvas size for mobile
+                this.updateCanvasSize();
+                window.addEventListener('resize', () => this.updateCanvasSize());
+            }
+            
+            showLandscapeWarning() {
+                if (!this.isMobile) return;
+                
+                const warning = document.createElement('div');
+                warning.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.95);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    color: white;
+                    font-size: 24px;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                warning.innerHTML = `
+                    <div style="max-width: 400px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📱</div>
+                        <h2>Please Rotate Your Device</h2>
+                        <p>This game is best played in landscape mode. Please rotate your device to continue.</p>
+                    </div>
+                `;
+                
+                document.body.appendChild(warning);
+                
+                // Remove warning when orientation changes
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        if (window.innerWidth > window.innerHeight) {
+                            warning.remove();
+                        }
+                    }, 300);
+                });
+            }
+            
+            updateCanvasSize() {
+                if (!this.isMobile) return;
+                
+                const canvas = document.getElementById('game-canvas');
+                const container = document.getElementById('game-container');
+                
+                const size = Math.min(
+                    container.clientWidth * 0.9,
+                    container.clientHeight * 0.9
+                );
+                
+                canvas.width = size;
+                canvas.height = size;
+                this.TILE_SIZE = Math.floor(size / this.GRID_SIZE);
+                
+                // Update overlay sizes
+                const aimOverlay = document.getElementById('aim-overlay');
+                const shotgunPreview = document.getElementById('shotgun-preview');
+                if (aimOverlay) {
+                    aimOverlay.style.width = size + 'px';
+                    aimOverlay.style.height = size + 'px';
+                }
+                if (shotgunPreview) {
+                    shotgunPreview.style.width = size + 'px';
+                    shotgunPreview.style.height = size + 'px';
+                }
+                
+                // Redraw
+                if (this.isIndoor) {
+                    this.drawIndoor();
+                } else {
+                    this.draw();
+                }
             }
             
             startGame() {
@@ -746,6 +1245,51 @@
                 
                 // FIXED: Update UI to show correct initial state
                 this.updateUI();
+                
+                // Setup mobile UI
+                if (this.isMobile) {
+                    this.setupMobileControls();
+                }
+            }
+            
+            setupMobileControls() {
+                // Enable mobile controls
+                document.getElementById('mobile-controls').style.display = 'flex';
+                
+                // Setup touch events for arrows
+                const arrowBtns = document.querySelectorAll('.mobile-arrow-btn');
+                arrowBtns.forEach(btn => {
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        btn.style.transform = btn.style.transform.replace('scale(1)', 'scale(0.95)');
+                    });
+                    
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        btn.style.transform = btn.style.transform.replace('scale(0.95)', 'scale(1)');
+                    });
+                });
+            }
+            
+            toggleMobileMenu() {
+                this.mobileMenuOpen = !this.mobileMenuOpen;
+                const menuToggle = document.getElementById('mobile-menu-toggle');
+                if (this.mobileMenuOpen) {
+                    menuToggle.textContent = '✕';
+                    // Show expanded info
+                    this.toggleMobileInfo();
+                } else {
+                    menuToggle.textContent = '☰';
+                    // Hide expanded info
+                    document.getElementById('mobile-info-expanded').classList.remove('active');
+                }
+            }
+            
+            toggleMobileInfo() {
+                const expandedInfo = document.getElementById('mobile-info-expanded');
+                if (expandedInfo) {
+                    expandedInfo.classList.toggle('active');
+                }
             }
             
             resetGame() {
@@ -770,6 +1314,9 @@
                 
                 // Clear damage effects
                 document.querySelectorAll('.damage-effect').forEach(el => el.remove());
+                
+                // Hide dice roll display
+                document.getElementById('dice-roll-display').style.display = 'none';
                 
                 // Hide modals
                 document.getElementById('house-modal').style.display = 'none';
@@ -925,24 +1472,19 @@
                     }
                 }
                 
-                // Define entrance and exit positions
-                const entranceX = Math.floor(indoorSize / 2) - 1;
-                const entranceY = 0;
-                const exitX = Math.floor(indoorSize / 2) - 1;
-                const exitY = indoorSize - 1;
+                // FIXED: Entrance and exit are now the same door at bottom center
+                const doorX = Math.floor(indoorSize / 2) - 1;
+                const doorY = indoorSize - 1;
                 
-                // Set entrance (always clear)
-                indoorMap[entranceY][entranceX] = { type: '⬆️', blocks: false, entrance: true };
+                // Set door (entrance/exit) at bottom center
+                indoorMap[doorY][doorX] = { type: '🚪', blocks: false, entrance: true, exit: true };
                 
-                // Set exit (always clear)
-                indoorMap[exitY][exitX] = { type: '🚪', blocks: false, exit: true };
-                
-                // Create walls around the perimeter
+                // Create walls around the perimeter (except door)
                 for (let y = 0; y < indoorSize; y++) {
                     for (let x = 0; x < indoorSize; x++) {
                         if (x === 0 || y === 0 || x === indoorSize-1 || y === indoorSize-1) {
-                            // Skip entrance and exit positions
-                            if ((x === entranceX && y === entranceY) || (x === exitX && y === exitY)) {
+                            // Skip door position
+                            if (x === doorX && y === doorY) {
                                 continue;
                             }
                             // Walls
@@ -951,21 +1493,20 @@
                     }
                 }
                 
-                // Define safe zones around entrance and exit (no obstacles)
+                // Define safe zone around door (no obstacles)
                 const safeZone = [
-                    [entranceX, entranceY],
-                    [entranceX, entranceY + 1],
-                    [entranceX - 1, entranceY],
-                    [entranceX + 1, entranceY],
-                    [exitX, exitY],
-                    [exitX, exitY - 1],
-                    [exitX - 1, exitY],
-                    [exitX + 1, exitY],
+                    [doorX, doorY],
+                    [doorX, doorY - 1],
+                    [doorX - 1, doorY],
+                    [doorX + 1, doorY],
+                    [doorX, doorY - 2],
+                    [doorX - 1, doorY - 1],
+                    [doorX + 1, doorY - 1],
                 ];
                 
                 // List of house furniture (blocking obstacles)
                 const furniture = ['🛋️', '📺', '🪑', '🛏️'];
-                // List of food items (healing items) - REDUCED from previous
+                // List of food items (healing items)
                 const foodItems = ['🍎', '🍗', '🥤'];
                 
                 // Place obstacles and items in the interior
@@ -975,8 +1516,8 @@
                         const isSafe = safeZone.some(([sx, sy]) => sx === x && sy === y);
                         if (isSafe) continue;
                         
-                        // Skip if this is entrance or exit
-                        if ((x === entranceX && y === entranceY) || (x === exitX && y === exitY)) continue;
+                        // Skip if this is door
+                        if (x === doorX && y === doorY) continue;
                         
                         const r = Math.random();
                         
@@ -985,7 +1526,7 @@
                             const furnitureType = furniture[Math.floor(Math.random() * furniture.length)];
                             indoorMap[y][x] = { type: furnitureType, blocks: true };
                         } else if (r < 0.28) {
-                            // Food item (3% chance, after 25% for furniture) - REDUCED
+                            // Food item (3% chance, after 25% for furniture)
                             const foodType = foodItems[Math.floor(Math.random() * foodItems.length)];
                             indoorMap[y][x] = { type: foodType, blocks: false, food: true, healAmount: this.getFoodHealAmount(foodType) };
                         } else if (r < 0.33) {
@@ -1150,9 +1691,8 @@
             }
             
             checkMobile() {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (isMobile) {
-                    document.getElementById('mobile-controls').style.display = 'block';
+                if (this.isMobile) {
+                    document.getElementById('mobile-controls').style.display = 'flex';
                 }
             }
             
@@ -1217,6 +1757,11 @@
                 document.getElementById('end-turn').disabled = false;
                 document.getElementById('reset-game').disabled = false;
                 
+                // Update mobile buttons
+                if (this.isMobile) {
+                    this.updateMobileUI();
+                }
+                
                 // Update status
                 const statusEl = document.getElementById('status-text');
                 const modeEl = document.getElementById('mode-indicator');
@@ -1252,6 +1797,45 @@
                 
                 // Update weapon info
                 this.updateWeaponInfo();
+            }
+            
+            updateMobileUI() {
+                const player = this.players[this.currentPlayer];
+                const playerColors = ['#ff5252', '#2196F3', '#ffeb3b', '#e91e63'];
+                
+                // Update mobile info panel
+                document.getElementById('mobile-player-color').style.background = playerColors[this.currentPlayer];
+                document.getElementById('mobile-player-name').textContent = `P${this.currentPlayer + 1}`;
+                document.getElementById('mobile-player-hp').textContent = `${player.hp} HP`;
+                document.getElementById('mobile-moves-left').textContent = this.movesLeft;
+                
+                // Update mobile expanded info
+                document.getElementById('mobile-weapon').textContent = this.weapons[player.weapon].name;
+                document.getElementById('mobile-armor').textContent = player.armor ? player.armor.name : 'None';
+                document.getElementById('mobile-gear').textContent = player.gear.length > 0 ? player.gear.map(g => g.emoji).join(' ') : '-';
+                document.getElementById('mobile-moves-full').textContent = this.movesLeft;
+                
+                // Update mobile buttons state
+                document.getElementById('mobile-roll-dice').disabled = this.hasRolled || this.isIndoor;
+                document.getElementById('mobile-enter-aim').disabled = this.hasShot || this.aiming;
+                document.getElementById('mobile-shoot').disabled = !this.aiming || this.hasShot;
+                document.getElementById('mobile-end-turn').disabled = false;
+                document.getElementById('mobile-reset-game').disabled = false;
+                
+                // Update mobile health bar
+                const healthPercent = (player.hp / player.maxHp) * 100;
+                const mobileHealthFill = document.querySelector('.mobile-health-fill');
+                if (mobileHealthFill) {
+                    mobileHealthFill.style.width = healthPercent + '%';
+                    
+                    if (healthPercent > 50) {
+                        mobileHealthFill.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                    } else if (healthPercent > 25) {
+                        mobileHealthFill.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+                    } else {
+                        mobileHealthFill.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
+                    }
+                }
             }
             
             updateWeaponInfo() {
@@ -1313,7 +1897,6 @@
                 }, 2000);
             }
             
-            // NEW: Damage effect visualization (kept because it works)
             showDamageEffect(x, y, damage) {
                 const effect = document.createElement('div');
                 effect.className = 'damage-effect';
@@ -1354,6 +1937,18 @@
                         this.movesLeft += g.value;
                     }
                 });
+                
+                // Show dice roll on mobile
+                if (this.isMobile) {
+                    const diceDisplay = document.getElementById('dice-roll-display');
+                    diceDisplay.textContent = `🎲 ${dice1} + ${dice2} = ${this.movesLeft}`;
+                    diceDisplay.style.display = 'block';
+                    
+                    // Hide after 2 seconds
+                    setTimeout(() => {
+                        diceDisplay.style.display = 'none';
+                    }, 2000);
+                }
                 
                 this.playSound(800);
                 this.updateUI();
@@ -1449,8 +2044,8 @@
                 } else if (tile.blocks) {
                     // Blocked by wall/furniture
                     return;
-                } else if (tile.exit) {
-                    // Exit house
+                } else if (tile.entrance || tile.exit) {
+                    // Exit house (door is both entrance and exit)
                     this.exitHouse(player);
                     return;
                 } else if (tile.item) {
@@ -1475,12 +2070,53 @@
                 const house = this.houses.find(h => h.x === houseX && h.y === houseY);
                 if (!house) return;
                 
-                // Find entrance position (top center)
-                const entranceX = Math.floor(8 / 2) - 1;
-                const entranceY = 0;
+                // FIXED: Enter from the door at bottom center (row 7, columns 3-4)
+                const doorY = 7;
+                const doorX = Math.floor(8 / 2) - 1; // Should be 3
+                
+                // Find the door tile
+                let spawnX = doorX;
+                let spawnY = doorY;
+                
+                // Check if door is blocked by another player
+                const doorBlocked = this.players.some(p => 
+                    p.alive && 
+                    p.inHouse === house &&
+                    p.indoorPos && 
+                    p.indoorPos.x === doorX && 
+                    p.indoorPos.y === doorY
+                );
+                
+                // If door is blocked, try adjacent positions
+                if (doorBlocked) {
+                    const adjacentPositions = [
+                        [doorX, doorY - 1],
+                        [doorX - 1, doorY],
+                        [doorX + 1, doorY],
+                        [doorX - 1, doorY - 1],
+                        [doorX + 1, doorY - 1]
+                    ];
+                    
+                    for (const [adjX, adjY] of adjacentPositions) {
+                        const tile = house.indoorMap[adjY] && house.indoorMap[adjY][adjX];
+                        const blocked = this.players.some(p => 
+                            p.alive && 
+                            p.inHouse === house &&
+                            p.indoorPos && 
+                            p.indoorPos.x === adjX && 
+                            p.indoorPos.y === adjY
+                        );
+                        
+                        if (tile && !tile.blocks && !blocked) {
+                            spawnX = adjX;
+                            spawnY = adjY;
+                            break;
+                        }
+                    }
+                }
                 
                 player.inHouse = house;
-                player.indoorPos = { x: entranceX, y: entranceY };
+                player.indoorPos = { x: spawnX, y: spawnY };
                 const playerIndex = this.players.indexOf(player);
                 house.playersInside.push(playerIndex);
                 
@@ -2102,7 +2738,7 @@
                 
                 target.hp -= finalDamage;
                 
-                // Show damage effect (kept because it works)
+                // Show damage effect
                 if (this.isIndoor && target.indoorPos) {
                     this.showDamageEffect(
                         target.indoorPos.x,
@@ -2289,7 +2925,6 @@
                             else if (tile.type === '🛏️') this.ctx.fillStyle = '#e91e63';
                             else if (tile.type === '📦') this.ctx.fillStyle = '#ffd700';
                             else if (tile.type === '🚪') this.ctx.fillStyle = '#4CAF50';
-                            else if (tile.type === '⬆️') this.ctx.fillStyle = '#4CAF50';
                             else if (tile.food) {
                                 // Food items - different colors
                                 if (tile.type === '🍎') this.ctx.fillStyle = '#f44336';
@@ -2521,6 +3156,15 @@
         
         // Make game globally accessible
         window.game = game;
+        
+        // Handle orientation change for mobile
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (game.isMobile) {
+                    game.updateCanvasSize();
+                }
+            }, 300);
+        });
     </script>
 </body>
 </html>
