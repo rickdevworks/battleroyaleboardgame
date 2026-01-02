@@ -35,9 +35,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            height: 100vh;
         }
         
         #game-canvas {
@@ -46,6 +47,9 @@
             border-radius: 8px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
         }
         
         #game-canvas.indoor {
@@ -198,13 +202,13 @@
         
         .turn-indicator {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 18px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
             font-weight: bold;
             border: 2px solid currentColor;
             z-index: 100;
@@ -457,16 +461,16 @@
             display: block;
         }
         
-        /* Dice roll display for mobile */
+        /* Dice roll display for mobile - moved to bottom */
         #dice-roll-display {
             position: absolute;
-            top: 10px;
+            bottom: 220px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
             padding: 8px 16px;
             border-radius: 20px;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #ffeb3b;
             z-index: 100;
@@ -592,6 +596,7 @@
             padding: 10px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(76, 201, 240, 0.3);
+            display: none;
         }
         
         .mobile-info-compact {
@@ -641,17 +646,17 @@
             display: none;
         }
         
-        /* Mobile action buttons (right side) */
-        #mobile-action-buttons {
+        /* Action buttons layout (like arrows) */
+        .mobile-action-controls {
             position: absolute;
             right: 20px;
             bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            width: 160px;
+            height: 160px;
         }
         
         .mobile-action-btn {
+            position: absolute;
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -675,6 +680,53 @@
             background: #666;
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .mobile-action-btn.roll {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+        }
+        
+        .mobile-action-btn.aim {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+        
+        .mobile-action-btn.shoot {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+        
+        .mobile-action-btn.end {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f72585, #b5179e);
+        }
+        
+        /* Reset button (separate, alongside the layout) */
+        #mobile-reset-game {
+            position: absolute;
+            bottom: 200px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff5722, #e64a19);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
         }
         
         .mobile-info-expanded {
@@ -704,7 +756,7 @@
             font-size: 14px;
         }
         
-        /* Force landscape warning - REMOVED the forced rotation */
+        /* Force landscape warning */
         .landscape-warning {
             display: none;
             position: fixed;
@@ -756,21 +808,21 @@
             }
             
             #game-container {
-                padding: 10px;
+                padding: 0;
                 width: 100vw;
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-start;
+                justify-content: center;
                 align-items: center;
             }
             
             #game-canvas {
-                width: 95vw !important;
-                height: 95vw !important;
-                max-width: 500px;
-                max-height: 500px;
-                margin-top: 80px;
+                width: 95vmin !important;
+                height: 95vmin !important;
+                max-width: 95vmin;
+                max-height: 95vmin;
+                border-width: 3px;
             }
             
             #mobile-controls {
@@ -785,7 +837,7 @@
             }
             
             .mobile-arrow-controls,
-            #mobile-action-buttons {
+            .mobile-action-controls {
                 pointer-events: auto;
             }
             
@@ -802,14 +854,14 @@
             }
             
             .turn-indicator {
-                top: 60px;
+                top: 10px;
                 font-size: 16px;
                 padding: 8px 16px;
             }
             
             #dice-roll-display {
-                top: 100px;
-                font-size: 20px;
+                bottom: 220px;
+                font-size: 18px;
                 padding: 6px 12px;
             }
             
@@ -1044,44 +1096,6 @@
         
         <!-- Mobile UI Elements -->
         <div id="mobile-controls" class="mobile-only">
-            <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-toggle" onclick="game.toggleMobileMenu()">☰</button>
-            
-            <!-- Mobile Info Panel -->
-            <div id="mobile-info-panel">
-                <div class="mobile-info-compact">
-                    <div class="mobile-player-info">
-                        <div id="mobile-player-color" class="mobile-player-color" style="background: #ff5252;"></div>
-                        <div>
-                            <div id="mobile-player-name" style="font-weight: bold; font-size: 16px;">P1</div>
-                            <div id="mobile-player-hp" style="font-size: 12px; color: #4CAF50;">100 HP</div>
-                        </div>
-                        <div class="mobile-health-bar">
-                            <div id="mobile-health-fill" class="mobile-health-fill" style="width: 100%;"></div>
-                        </div>
-                    </div>
-                    <div id="mobile-moves-left" style="font-weight: bold; color: #4cc9f0; font-size: 18px;">0</div>
-                </div>
-                
-                <!-- Expanded mobile info (hidden by default) -->
-                <div id="mobile-info-expanded" class="mobile-info-expanded">
-                    <h4 style="margin: 0 0 10px 0; color: #4cc9f0; text-align: center;">Player Info</h4>
-                    <div class="mobile-expanded-stats">
-                        <div>Weapon:</div>
-                        <div id="mobile-weapon">Pistol</div>
-                        <div>Armor:</div>
-                        <div id="mobile-armor">None</div>
-                        <div>Gear:</div>
-                        <div id="mobile-gear">-</div>
-                        <div>Moves Left:</div>
-                        <div id="mobile-moves-full">0</div>
-                    </div>
-                    <div style="margin-top: 15px; font-size: 12px; color: #aaa; text-align: center;">
-                        Tap outside to close
-                    </div>
-                </div>
-            </div>
-            
             <!-- Arrow Controls (Nintendo-style, left side) -->
             <div class="mobile-arrow-controls">
                 <button class="mobile-arrow-btn up" onclick="game.movePlayer(0, -1)">↑</button>
@@ -1090,9 +1104,9 @@
                 <button class="mobile-arrow-btn right" onclick="game.movePlayer(1, 0)">→</button>
             </div>
             
-            <!-- Action Buttons (right side) -->
-            <div id="mobile-action-buttons">
-                <button class="mobile-action-btn dice" onclick="game.rollDice()" id="mobile-roll-dice">
+            <!-- Action Buttons (right side, same layout as arrows) -->
+            <div class="mobile-action-controls">
+                <button class="mobile-action-btn roll" onclick="game.rollDice()" id="mobile-roll-dice">
                     🎲
                 </button>
                 <button class="mobile-action-btn aim" onclick="game.enterAim()" id="mobile-enter-aim">
@@ -1101,13 +1115,15 @@
                 <button class="mobile-action-btn shoot" onclick="game.shoot()" id="mobile-shoot">
                     💥
                 </button>
-                <button class="mobile-action-btn end-turn" onclick="game.endTurn()" id="mobile-end-turn">
+                <button class="mobile-action-btn end" onclick="game.endTurn()" id="mobile-end-turn">
                     ⏭️
                 </button>
-                <button class="mobile-action-btn reset" onclick="game.resetGame()" id="mobile-reset-game">
-                    🔄
-                </button>
             </div>
+            
+            <!-- Reset button (separate, alongside) -->
+            <button id="mobile-reset-game" onclick="game.resetGame()">
+                🔄
+            </button>
         </div>
     </div>
 
@@ -1116,7 +1132,6 @@
             constructor() {
                 // Configuration
                 this.GRID_SIZE = 15;
-                this.TILE_SIZE = 48;
                 this.PLAYER_COUNT = 4;
                 
                 // Game state
@@ -1175,7 +1190,6 @@
                 const warning = document.querySelector('.landscape-warning');
                 const gameContainer = document.getElementById('game-container');
                 const mobileControls = document.getElementById('mobile-controls');
-                const mobileInfoPanel = document.getElementById('mobile-info-panel');
                 
                 if (window.innerHeight > window.innerWidth) {
                     // Portrait mode
@@ -1183,14 +1197,12 @@
                     if (warning) warning.style.display = 'flex';
                     if (gameContainer) gameContainer.style.display = 'none';
                     if (mobileControls) mobileControls.style.display = 'none';
-                    if (mobileInfoPanel) mobileInfoPanel.style.display = 'none';
                 } else {
                     // Landscape mode
                     console.log("Landscape mode detected - showing game");
                     if (warning) warning.style.display = 'none';
                     if (gameContainer) gameContainer.style.display = 'flex';
                     if (mobileControls) mobileControls.style.display = 'block';
-                    if (mobileInfoPanel) mobileInfoPanel.style.display = 'block';
                 }
             }
             
@@ -1199,29 +1211,6 @@
                 
                 // Show mobile controls
                 document.getElementById('mobile-controls').style.display = 'block';
-                document.getElementById('mobile-info-panel').style.display = 'block';
-                
-                // Setup mobile info panel click
-                const mobileInfoPanel = document.getElementById('mobile-info-panel');
-                if (mobileInfoPanel) {
-                    mobileInfoPanel.addEventListener('click', (e) => {
-                        if (e.target === mobileInfoPanel || e.target.closest('.mobile-info-compact')) {
-                            this.toggleMobileInfo();
-                        }
-                    });
-                }
-                
-                // Close expanded info when clicking outside
-                document.addEventListener('click', (e) => {
-                    const expandedInfo = document.getElementById('mobile-info-expanded');
-                    const mobileInfoPanel = document.getElementById('mobile-info-panel');
-                    const menuToggle = document.getElementById('mobile-menu-toggle');
-                    
-                    if (expandedInfo && expandedInfo.classList.contains('active') &&
-                        !mobileInfoPanel.contains(e.target) && !menuToggle.contains(e.target)) {
-                        this.toggleMobileInfo();
-                    }
-                });
                 
                 // Update canvas size for mobile
                 this.updateCanvasSize();
@@ -1232,34 +1221,47 @@
             }
             
             updateCanvasSize() {
-                if (!this.isMobile) return;
-                
                 const canvas = document.getElementById('game-canvas');
                 const container = document.getElementById('game-container');
                 
                 if (!canvas || !container) return;
                 
-                // Calculate size based on container
+                // Calculate size to fill most of the screen
                 const containerWidth = container.clientWidth;
                 const containerHeight = container.clientHeight;
-                const size = Math.min(containerWidth * 0.85, containerHeight * 0.70);
+                
+                // Use vmin units to make it responsive while maintaining square aspect
+                const size = Math.min(containerWidth, containerHeight) * 0.85;
                 
                 console.log("Updating canvas size:", { containerWidth, containerHeight, size });
                 
                 canvas.width = size;
                 canvas.height = size;
+                
+                // Calculate tile size based on canvas size and grid
                 this.TILE_SIZE = Math.floor(size / this.GRID_SIZE);
+                
+                // Make sure tile size is reasonable for emojis
+                if (this.TILE_SIZE < 32) {
+                    this.TILE_SIZE = 32;
+                    // Adjust canvas size if needed
+                    const newSize = this.TILE_SIZE * this.GRID_SIZE;
+                    canvas.width = newSize;
+                    canvas.height = newSize;
+                }
+                
+                console.log("Tile size:", this.TILE_SIZE);
                 
                 // Update overlay sizes
                 const aimOverlay = document.getElementById('aim-overlay');
                 const shotgunPreview = document.getElementById('shotgun-preview');
                 if (aimOverlay) {
-                    aimOverlay.style.width = size + 'px';
-                    aimOverlay.style.height = size + 'px';
+                    aimOverlay.style.width = canvas.width + 'px';
+                    aimOverlay.style.height = canvas.height + 'px';
                 }
                 if (shotgunPreview) {
-                    shotgunPreview.style.width = size + 'px';
-                    shotgunPreview.style.height = size + 'px';
+                    shotgunPreview.style.width = canvas.width + 'px';
+                    shotgunPreview.style.height = canvas.height + 'px';
                 }
                 
                 // Redraw
@@ -1280,9 +1282,8 @@
                 this.initWeapons();
                 this.initGear();
                 this.initUI();
-                this.draw();
                 
-                // Set initial turn - FIXED: Ensure proper initialization
+                // Set initial turn
                 this.currentPlayer = 0;
                 this.movesLeft = 0;
                 this.hasShot = false;
@@ -1297,7 +1298,7 @@
                 // Enable controls immediately
                 this.updateControlStatus();
                 
-                // FIXED: Update UI to show correct initial state
+                // Update UI to show correct initial state
                 this.updateUI();
                 
                 // Setup mobile UI if needed
@@ -1305,15 +1306,12 @@
                     this.setupMobileControls();
                     this.updateCanvasSize();
                 }
+                
+                this.draw();
             }
             
             setupMobileControls() {
                 console.log("Setting up mobile controls");
-                // Enable mobile controls
-                const mobileControls = document.getElementById('mobile-controls');
-                if (mobileControls) {
-                    mobileControls.style.display = 'block';
-                }
                 
                 // Setup touch events for arrows
                 const arrowBtns = document.querySelectorAll('.mobile-arrow-btn');
@@ -1330,7 +1328,7 @@
                 });
                 
                 // Setup touch events for action buttons
-                const actionBtns = document.querySelectorAll('.mobile-action-btn');
+                const actionBtns = document.querySelectorAll('.mobile-action-btn, #mobile-reset-game');
                 actionBtns.forEach(btn => {
                     btn.addEventListener('touchstart', (e) => {
                         e.preventDefault();
@@ -1342,27 +1340,6 @@
                         btn.style.transform = 'scale(1)';
                     });
                 });
-            }
-            
-            toggleMobileMenu() {
-                this.mobileMenuOpen = !this.mobileMenuOpen;
-                const menuToggle = document.getElementById('mobile-menu-toggle');
-                if (this.mobileMenuOpen) {
-                    menuToggle.textContent = '✕';
-                    // Show expanded info
-                    this.toggleMobileInfo();
-                } else {
-                    menuToggle.textContent = '☰';
-                    // Hide expanded info
-                    document.getElementById('mobile-info-expanded').classList.remove('active');
-                }
-            }
-            
-            toggleMobileInfo() {
-                const expandedInfo = document.getElementById('mobile-info-expanded');
-                if (expandedInfo) {
-                    expandedInfo.classList.toggle('active');
-                }
             }
             
             resetGame() {
@@ -1522,7 +1499,7 @@
                                 entranceY: y
                             });
                         } else if (r < 0.20) {
-                            // CHANGED: Item crates (📦 instead of ⭐)
+                            // Item crates
                             this.map[y][x] = { type: '📦', blocks: false, item: true };
                         } else {
                             this.map[y][x] = null;
@@ -1556,7 +1533,7 @@
                     }
                 }
                 
-                // FIXED: Entrance and exit are now the same door at bottom center
+                // Entrance and exit are now the same door at bottom center
                 const doorX = Math.floor(indoorSize / 2) - 1;
                 const doorY = indoorSize - 1;
                 
@@ -1791,11 +1768,11 @@
                 const healthText = document.getElementById('health-text');
                 
                 if (healthPercent > 50) {
-                    healthBar.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                    if (healthBar) healthBar.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
                 } else if (healthPercent > 25) {
-                    healthBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+                    if (healthBar) healthBar.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
                 } else {
-                    healthBar.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
+                    if (healthBar) healthBar.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
                 }
                 
                 if (healthBar) healthBar.style.width = healthPercent + '%';
@@ -1836,7 +1813,6 @@
                 if (rollDiceBtn) {
                     rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
                     
-                    // ADDED: Highlight roll dice button when it's player's turn and hasn't rolled
                     if (!this.hasRolled && !this.isIndoor && this.gameActive) {
                         rollDiceBtn.classList.add('roll-dice-highlight');
                     } else {
@@ -1904,48 +1880,6 @@
             
             updateMobileUI() {
                 const player = this.players[this.currentPlayer];
-                const playerColors = ['#ff5252', '#2196F3', '#ffeb3b', '#e91e63'];
-                
-                // Update mobile info panel
-                const mobilePlayerColor = document.getElementById('mobile-player-color');
-                if (mobilePlayerColor) mobilePlayerColor.style.background = playerColors[this.currentPlayer];
-                
-                const mobilePlayerName = document.getElementById('mobile-player-name');
-                if (mobilePlayerName) mobilePlayerName.textContent = `P${this.currentPlayer + 1}`;
-                
-                const mobilePlayerHp = document.getElementById('mobile-player-hp');
-                if (mobilePlayerHp) mobilePlayerHp.textContent = `${player.hp} HP`;
-                
-                const mobileMovesLeft = document.getElementById('mobile-moves-left');
-                if (mobileMovesLeft) mobileMovesLeft.textContent = this.movesLeft;
-                
-                // Update mobile expanded info
-                const mobileWeapon = document.getElementById('mobile-weapon');
-                if (mobileWeapon) mobileWeapon.textContent = this.weapons[player.weapon].name;
-                
-                const mobileArmor = document.getElementById('mobile-armor');
-                if (mobileArmor) mobileArmor.textContent = player.armor ? player.armor.name : 'None';
-                
-                const mobileGear = document.getElementById('mobile-gear');
-                if (mobileGear) mobileGear.textContent = player.gear.length > 0 ? player.gear.map(g => g.emoji).join(' ') : '-';
-                
-                const mobileMovesFull = document.getElementById('mobile-moves-full');
-                if (mobileMovesFull) mobileMovesFull.textContent = this.movesLeft;
-                
-                // Update mobile health bar
-                const healthPercent = (player.hp / player.maxHp) * 100;
-                const mobileHealthFill = document.getElementById('mobile-health-fill');
-                if (mobileHealthFill) {
-                    mobileHealthFill.style.width = healthPercent + '%';
-                    
-                    if (healthPercent > 50) {
-                        mobileHealthFill.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
-                    } else if (healthPercent > 25) {
-                        mobileHealthFill.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
-                    } else {
-                        mobileHealthFill.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
-                    }
-                }
                 
                 // Update mobile buttons state
                 const mobileRollDice = document.getElementById('mobile-roll-dice');
@@ -2055,7 +1989,7 @@
             }
             
             rollDice() {
-                // FIXED: Can only roll once per turn
+                // Can only roll once per turn
                 if (this.hasRolled || this.isIndoor) return;
                 
                 const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -2205,7 +2139,7 @@
                 const house = this.houses.find(h => h.x === houseX && h.y === houseY);
                 if (!house) return;
                 
-                // FIXED: Enter from the door at bottom center (row 7, columns 3-4)
+                // Enter from the door at bottom center (row 7, columns 3-4)
                 const doorY = 7;
                 const doorX = Math.floor(8 / 2) - 1; // Should be 3
                 
@@ -2393,7 +2327,7 @@
                 // Remove item from map
                 this.map[y][x] = null;
                 
-                // CHANGED: More weapons (70%), less gear (30%)
+                // More weapons (70%), less gear (30%)
                 const isWeapon = Math.random() < 0.7;
                 
                 if (isWeapon) {
@@ -2525,10 +2459,10 @@
             }
             
             enterAim() {
-                // FIXED: Check if player has already shot AND if they haven't rolled dice yet
+                // Check if player has already shot
                 if (this.aiming || this.hasShot) return;
                 
-                // FIXED: Allow aiming even if hasn't rolled dice yet (for indoor combat)
+                // Allow aiming even if hasn't rolled dice yet (for indoor combat)
                 const player = this.players[this.currentPlayer];
                 this.aiming = true;
                 
@@ -2936,10 +2870,10 @@
             endTurn() {
                 if (!confirm("Are you sure you want to end your turn?")) return;
                 
-                // FIXED: Properly reset all turn state
+                // Properly reset all turn state
                 this.movesLeft = 0;
                 this.hasShot = false;
-                this.hasRolled = false; // CRITICAL FIX: Reset for next player
+                this.hasRolled = false;
                 this.aiming = false;
                 this.aim = {
                     x: null,
@@ -2985,6 +2919,9 @@
                 
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
+                // Calculate font size based on tile size - FIXED for emoji fitting
+                const fontSize = Math.floor(this.TILE_SIZE * 0.6); // Smaller font to fit in tiles
+                
                 // Draw outdoor map
                 for (let y = 0; y < this.GRID_SIZE; y++) {
                     for (let x = 0; x < this.GRID_SIZE; x++) {
@@ -3001,7 +2938,7 @@
                         
                         // Draw tile content
                         if (tile) {
-                            this.ctx.font = '28px Arial';
+                            this.ctx.font = `${fontSize}px Arial, sans-serif`;
                             this.ctx.textAlign = 'center';
                             this.ctx.textBaseline = 'middle';
                             
@@ -3037,6 +2974,9 @@
                 const offsetX = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
                 const offsetY = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
                 
+                // Calculate font size based on tile size - FIXED for emoji fitting
+                const fontSize = Math.floor(this.TILE_SIZE * 0.6);
+                
                 // Draw indoor map
                 for (let y = 0; y < indoorSize; y++) {
                     for (let x = 0; x < indoorSize; x++) {
@@ -3061,7 +3001,7 @@
                         
                         // Draw tile content
                         if (tile) {
-                            this.ctx.font = '28px Arial';
+                            this.ctx.font = `${fontSize}px Arial, sans-serif`;
                             this.ctx.textAlign = 'center';
                             this.ctx.textBaseline = 'middle';
                             
@@ -3110,6 +3050,7 @@
                 const ctx = houseCanvas.getContext('2d');
                 const indoorSize = 8;
                 const tileSize = Math.floor(houseCanvas.width / indoorSize);
+                const fontSize = Math.floor(tileSize * 0.6);
                 
                 ctx.clearRect(0, 0, houseCanvas.width, houseCanvas.height);
                 
@@ -3127,7 +3068,7 @@
                         
                         // Draw tile content
                         if (tile) {
-                            ctx.font = `${tileSize * 0.6}px Arial`;
+                            ctx.font = `${fontSize}px Arial, sans-serif`;
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
                             
@@ -3178,7 +3119,7 @@
                     ctx.fill();
                     
                     // Draw player emoji
-                    ctx.font = `${tileSize * 0.6}px Arial`;
+                    ctx.font = `${fontSize}px Arial, sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = '#fff';
@@ -3208,13 +3149,16 @@
                 );
                 this.ctx.fill();
                 
+                // Calculate font size for player emoji
+                const fontSize = Math.floor(this.TILE_SIZE * 0.5);
+                
                 // Draw player emoji with pulsing animation if it's this player's turn
-                this.ctx.font = '28px Arial';
+                this.ctx.font = `${fontSize}px Arial, sans-serif`;
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillStyle = '#fff';
                 
-                // ADDED: Pulsing animation for current player
+                // Pulsing animation for current player
                 if (index === this.currentPlayer) {
                     // Save the current context state
                     this.ctx.save();
@@ -3328,3 +3272,4 @@
     </script>
 </body>
 </html>
+
