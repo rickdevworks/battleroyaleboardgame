@@ -3,6 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- MOBILE OPTIMIZATION: Enhanced viewport for landscape forcing -->
+    <script>
+        // Force landscape mode and rotation prompt on mobile
+        (function() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Update viewport meta for mobile
+                const viewportMeta = document.querySelector('meta[name="viewport"]');
+                if (viewportMeta) {
+                    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+                }
+                
+                // Create rotation prompt function
+                const createRotationPrompt = () => {
+                    const prompt = document.createElement('div');
+                    prompt.id = 'rotation-prompt';
+                    prompt.innerHTML = `
+                        <div style="
+                            position: fixed;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: #1a1a2e;
+                            z-index: 9999;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            text-align: center;
+                            padding: 20px;
+                            backdrop-filter: blur(10px);
+                        ">
+                            <div style="
+                                font-size: 80px;
+                                margin-bottom: 30px;
+                                animation: spin 2s infinite linear;
+                            ">🔄</div>
+                            <h2 style="color: #4cc9f0; font-size: 24px; margin-bottom: 15px;">
+                                Please Rotate Your Device
+                            </h2>
+                            <p style="color: #fff; font-size: 18px; max-width: 300px; line-height: 1.5;">
+                                This game requires landscape mode for optimal gameplay experience
+                            </p>
+                            <p style="color: #ff9800; font-size: 16px; margin-top: 30px; padding: 10px; background: rgba(255,152,0,0.1); border-radius: 8px;">
+                                ⚠️ This message will not disappear until you rotate to landscape
+                            </p>
+                            <div style="margin-top: 30px; font-size: 40px;">↷</div>
+                        </div>
+                    `;
+                    document.body.appendChild(prompt);
+                    
+                    // Add CSS animation
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    // Block all interactions
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.touchAction = 'none';
+                    document.body.style.userSelect = 'none';
+                };
+                
+                // Check orientation
+                const checkOrientation = () => {
+                    const isPortrait = window.innerHeight > window.innerWidth;
+                    
+                    if (isPortrait) {
+                        if (!document.getElementById('rotation-prompt')) {
+                            createRotationPrompt();
+                        }
+                        return false;
+                    } else {
+                        const prompt = document.getElementById('rotation-prompt');
+                        if (prompt) {
+                            prompt.remove();
+                            document.body.style.overflow = '';
+                            document.body.style.touchAction = '';
+                            document.body.style.userSelect = '';
+                        }
+                        return true;
+                    }
+                };
+                
+                // Initial check
+                setTimeout(() => {
+                    if (checkOrientation()) {
+                        // Initialize mobile features if already in landscape
+                        window.initializeMobileFeatures?.();
+                    }
+                }, 100);
+                
+                // Listen for orientation changes
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        if (checkOrientation()) {
+                            window.initializeMobileFeatures?.();
+                        }
+                    }, 300);
+                });
+                
+                window.addEventListener('resize', () => {
+                    setTimeout(checkOrientation, 100);
+                });
+            }
+        })();
+    </script>
     <title>Battle Royale Board Game</title>
     <style>
         * {
@@ -280,6 +390,125 @@
             display: none;
         }
         
+        /* MOBILE OPTIMIZATION: Enhanced mobile controls container */
+        #mobile-controls-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            pointer-events: none;
+        }
+        
+        /* MOBILE OPTIMIZATION: Enhanced mobile info panel */
+        #mobile-info-panel {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(42, 42, 66, 0.95);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #4cc9f0;
+            z-index: 60;
+            max-width: 180px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+        
+        /* MOBILE OPTIMIZATION: Enhanced D-pad */
+        #mobile-dpad {
+            position: fixed;
+            bottom: 100px;
+            left: 60px;
+            width: 180px;
+            height: 180px;
+            z-index: 60;
+            pointer-events: auto;
+        }
+        
+        /* MOBILE OPTIMIZATION: Enhanced action buttons */
+        #mobile-action-buttons {
+            position: fixed;
+            bottom: 100px;
+            right: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 60;
+            pointer-events: auto;
+        }
+        
+        /* MOBILE OPTIMIZATION: Mobile button styling */
+        .mobile-control-btn {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            position: relative;
+        }
+        
+        .mobile-control-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+        
+        .mobile-direction-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(67, 97, 238, 0.9);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        .mobile-direction-btn:active {
+            background: rgba(67, 97, 238, 1);
+            transform: scale(0.95);
+        }
+        
+        /* MOBILE OPTIMIZATION: D-pad center indicator */
+        .dpad-center {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
         /* ADDED: Roll dice button highlight animation */
         @keyframes buttonPulse {
             0% { transform: scale(1); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4); }
@@ -448,7 +677,99 @@
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
         }
         
-        @media (max-width: 1200px) {
+        /* MOBILE OPTIMIZATION: Landscape mobile styles */
+        @media (max-width: 1200px) and (orientation: landscape) {
+            body {
+                flex-direction: column !important;
+                overflow: hidden !important;
+                min-height: 100vh !important;
+                height: 100vh !important;
+                position: fixed !important;
+                width: 100vw !important;
+            }
+            
+            #sidebar {
+                display: none !important;
+            }
+            
+            #game-container {
+                width: 100vw !important;
+                height: 100vh !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                position: relative !important;
+            }
+            
+            #game-canvas {
+                width: 100% !important;
+                height: 100% !important;
+                border: none !important;
+                border-radius: 0 !important;
+                object-fit: contain;
+            }
+            
+            /* Fix aiming overlay positioning bug */
+            #aim-overlay, #shotgun-preview {
+                width: 100% !important;
+                height: 100% !important;
+                top: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+            }
+            
+            .aim-cell, .shotgun-cell, .indoor-cell {
+                transform: translate(-50%, -50%);
+            }
+            
+            /* Ensure all game elements are visible */
+            .turn-indicator {
+                top: 5px !important;
+                font-size: 14px !important;
+                padding: 8px 16px !important;
+                max-width: 90vw;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                z-index: 70 !important;
+            }
+            
+            /* Show mobile controls */
+            #mobile-controls-container {
+                display: block;
+            }
+            
+            #mobile-info-panel {
+                display: block;
+            }
+            
+            /* Hide old mobile controls */
+            #mobile-controls {
+                display: none !important;
+            }
+            
+            /* Adjust emoji sizes for mobile */
+            .mobile-control-btn {
+                font-size: 32px !important;
+            }
+            
+            /* Prevent text selection on mobile */
+            * {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        }
+        
+        /* MOBILE OPTIMIZATION: Portrait mode - hide everything except rotation prompt */
+        @media (max-width: 1200px) and (orientation: portrait) {
+            #sidebar, #game-container, #mobile-controls-container, #mobile-info-panel {
+                display: none !important;
+            }
+        }
+        
+        /* Desktop styles */
+        @media (max-width: 1200px) and (orientation: landscape) {
+            /* Keep existing responsive behavior */
             body {
                 flex-direction: column;
             }
@@ -462,6 +783,18 @@
             
             #mobile-controls {
                 display: block;
+            }
+        }
+        
+        /* High-DPI mobile devices */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            #game-canvas {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+            
+            .mobile-control-btn, .mobile-direction-btn {
+                border-width: 2px;
             }
         }
     </style>
@@ -665,7 +998,76 @@
             <div>Move onto the 🚪 door tile to exit</div>
         </div>
         
-        <!-- Mobile Controls -->
+        <!-- MOBILE OPTIMIZATION: New mobile controls -->
+        <div id="mobile-controls-container">
+            <!-- Mobile info panel (top left) -->
+            <div id="mobile-info-panel">
+                <div style="color: #4cc9f0; font-weight: bold; margin-bottom: 5px; font-size: 14px;">
+                    Player <span id="mobile-player-num">1</span>
+                </div>
+                <div id="mobile-health-bar" class="health-bar-container" style="margin: 5px 0; height: 15px;">
+                    <div class="health-bar" style="width: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A);">
+                        <div class="health-text" style="font-size: 10px;">100 HP</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px;">
+                    <span id="mobile-weapon">⚔️ Pistol</span>
+                    <span id="mobile-moves">🎯 0 moves</span>
+                </div>
+            </div>
+            
+            <!-- D-pad (left side) -->
+            <div id="mobile-dpad">
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    display: grid;
+                    grid-template-columns: repeat(3, 60px);
+                    grid-template-rows: repeat(3, 60px);
+                    gap: 8px;
+                ">
+                    <div></div>
+                    <button class="mobile-direction-btn up" data-action="up" style="grid-column: 2; grid-row: 1;">
+                        ↑
+                    </button>
+                    <div></div>
+                    <button class="mobile-direction-btn left" data-action="left" style="grid-column: 1; grid-row: 2;">
+                        ←
+                    </button>
+                    <div class="dpad-center">
+                        MOVE
+                    </div>
+                    <button class="mobile-direction-btn right" data-action="right" style="grid-column: 3; grid-row: 2;">
+                        →
+                    </button>
+                    <div></div>
+                    <button class="mobile-direction-btn down" data-action="down" style="grid-column: 2; grid-row: 3;">
+                        ↓
+                    </button>
+                    <div></div>
+                </div>
+            </div>
+            
+            <!-- Action buttons (right side) -->
+            <div id="mobile-action-buttons">
+                <button class="mobile-control-btn" data-action="roll-dice" style="background: linear-gradient(135deg, #4361ee, #3a0ca3);">
+                    🎲
+                </button>
+                <button class="mobile-control-btn" data-action="enter-aim" style="background: linear-gradient(135deg, #ff9800, #ff5722);">
+                    🎯
+                </button>
+                <button class="mobile-control-btn" data-action="shoot" style="background: linear-gradient(135deg, #f72585, #b5179e);">
+                    🔥
+                </button>
+                <button class="mobile-control-btn" data-action="end-turn" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                    ⏭️
+                </button>
+            </div>
+        </div>
+        
+        <!-- Old Mobile Controls (kept for compatibility) -->
         <div id="mobile-controls">
             <div style="position: absolute; bottom: 80px; left: 20px; right: 20px;">
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 15px;">
@@ -684,6 +1086,229 @@
     </div>
 
     <script>
+        // MOBILE OPTIMIZATION: Global function to initialize mobile features
+        window.initializeMobileFeatures = function() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (!isMobile) return;
+            
+            // Hide desktop sidebar
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.style.display = 'none';
+            
+            // Show mobile controls
+            const mobileContainer = document.getElementById('mobile-controls-container');
+            const mobileInfo = document.getElementById('mobile-info-panel');
+            if (mobileContainer) mobileContainer.style.display = 'block';
+            if (mobileInfo) mobileInfo.style.display = 'block';
+            
+            // Hide old mobile controls
+            const oldMobileControls = document.getElementById('mobile-controls');
+            if (oldMobileControls) oldMobileControls.style.display = 'none';
+            
+            // Setup mobile control event listeners
+            setupMobileControls();
+            
+            // Fix aiming overlay bug on mobile
+            fixMobileAimingBug();
+            
+            // Update mobile UI
+            updateMobileUI();
+            
+            console.log('Mobile features initialized');
+        };
+        
+        // MOBILE OPTIMIZATION: Setup mobile control event listeners
+        function setupMobileControls() {
+            // Movement buttons
+            document.querySelectorAll('.mobile-direction-btn').forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    const action = this.getAttribute('data-action');
+                    handleMobileAction(action);
+                    
+                    // Visual feedback
+                    this.style.transform = 'scale(0.95)';
+                    this.style.opacity = '0.8';
+                });
+                
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(1)';
+                    this.style.opacity = '1';
+                });
+            });
+            
+            // Action buttons
+            document.querySelectorAll('.mobile-control-btn').forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    const action = this.getAttribute('data-action');
+                    handleMobileAction(action);
+                    
+                    // Visual feedback
+                    this.style.transform = 'scale(0.95)';
+                    this.style.opacity = '0.8';
+                });
+                
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(1)';
+                    this.style.opacity = '1';
+                });
+            });
+            
+            // Swipe gestures for movement pad
+            const dpad = document.getElementById('mobile-dpad');
+            if (dpad) {
+                let touchStart = null;
+                
+                dpad.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    touchStart = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY,
+                        time: Date.now()
+                    };
+                });
+                
+                dpad.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                });
+                
+                dpad.addEventListener('touchend', function(e) {
+                    if (!touchStart) return;
+                    
+                    const touchEnd = {
+                        x: e.changedTouches[0].clientX,
+                        y: e.changedTouches[0].clientY
+                    };
+                    
+                    const dx = touchEnd.x - touchStart.x;
+                    const dy = touchEnd.y - touchStart.y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    const duration = Date.now() - touchStart.time;
+                    
+                    // Only register significant swipes
+                    if (distance > 20 && duration < 300) {
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                        handleSwipe(angle);
+                    }
+                    
+                    touchStart = null;
+                });
+            }
+        }
+        
+        // MOBILE OPTIMIZATION: Handle mobile actions
+        function handleMobileAction(action) {
+            switch(action) {
+                case 'up':
+                    if (window.game) window.game.movePlayer(0, -1);
+                    break;
+                case 'down':
+                    if (window.game) window.game.movePlayer(0, 1);
+                    break;
+                case 'left':
+                    if (window.game) window.game.movePlayer(-1, 0);
+                    break;
+                case 'right':
+                    if (window.game) window.game.movePlayer(1, 0);
+                    break;
+                case 'roll-dice':
+                    if (window.game) window.game.rollDice();
+                    break;
+                case 'enter-aim':
+                    if (window.game) window.game.enterAim();
+                    break;
+                case 'shoot':
+                    if (window.game) window.game.shoot();
+                    break;
+                case 'end-turn':
+                    if (window.game) window.game.endTurn();
+                    break;
+            }
+        }
+        
+        // MOBILE OPTIMIZATION: Handle swipe gestures
+        function handleSwipe(angle) {
+            // Convert angle to direction
+            if (angle >= -45 && angle < 45) {
+                handleMobileAction('right');
+            } else if (angle >= 45 && angle < 135) {
+                handleMobileAction('down');
+            } else if (angle >= 135 || angle < -135) {
+                handleMobileAction('left');
+            } else {
+                handleMobileAction('up');
+            }
+        }
+        
+        // MOBILE OPTIMIZATION: Fix aiming overlay bug
+        function fixMobileAimingBug() {
+            const canvas = document.getElementById('game-canvas');
+            const aimOverlay = document.getElementById('aim-overlay');
+            const shotgunPreview = document.getElementById('shotgun-preview');
+            
+            if (canvas && aimOverlay && shotgunPreview) {
+                const updateOverlaySizes = () => {
+                    const rect = canvas.getBoundingClientRect();
+                    aimOverlay.style.width = rect.width + 'px';
+                    aimOverlay.style.height = rect.height + 'px';
+                    aimOverlay.style.left = rect.left + 'px';
+                    aimOverlay.style.top = rect.top + 'px';
+                    
+                    shotgunPreview.style.width = rect.width + 'px';
+                    shotgunPreview.style.height = rect.height + 'px';
+                    shotgunPreview.style.left = rect.left + 'px';
+                    shotgunPreview.style.top = rect.top + 'px';
+                };
+                
+                updateOverlaySizes();
+                window.addEventListener('resize', updateOverlaySizes);
+                window.addEventListener('orientationchange', updateOverlaySizes);
+            }
+        }
+        
+        // MOBILE OPTIMIZATION: Update mobile UI
+        function updateMobileUI() {
+            if (!window.game) return;
+            
+            const player = window.game.players[window.game.currentPlayer];
+            if (!player) return;
+            
+            // Update mobile info panel
+            const playerNumEl = document.getElementById('mobile-player-num');
+            const healthBarEl = document.getElementById('mobile-health-bar').querySelector('.health-bar');
+            const healthTextEl = document.getElementById('mobile-health-bar').querySelector('.health-text');
+            const weaponEl = document.getElementById('mobile-weapon');
+            const movesEl = document.getElementById('mobile-moves');
+            
+            if (playerNumEl) playerNumEl.textContent = window.game.currentPlayer + 1;
+            if (healthBarEl) {
+                const healthPercent = (player.hp / player.maxHp) * 100;
+                healthBarEl.style.width = healthPercent + '%';
+                
+                if (healthPercent > 50) {
+                    healthBarEl.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                } else if (healthPercent > 25) {
+                    healthBarEl.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+                } else {
+                    healthBarEl.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
+                }
+            }
+            if (healthTextEl) healthTextEl.textContent = `${player.hp} HP`;
+            if (weaponEl) weaponEl.textContent = `⚔️ ${window.game.weapons[player.weapon].name}`;
+            if (movesEl) movesEl.textContent = `🎯 ${window.game.movesLeft} moves`;
+        }
+        
+        // MOBILE OPTIMIZATION: Hook into game's updateUI to also update mobile UI
+        const originalUpdateUI = BattleRoyaleGame.prototype.updateUI;
+        BattleRoyaleGame.prototype.updateUI = function() {
+            originalUpdateUI.call(this);
+            updateMobileUI();
+        };
+        
         class BattleRoyaleGame {
             constructor() {
                 // Configuration
@@ -716,6 +1341,9 @@
                 
                 // Show rules modal
                 document.getElementById('rules-modal').style.display = 'flex';
+                
+                // MOBILE OPTIMIZATION: Check for mobile on constructor
+                this.checkMobile();
             }
             
             startGame() {
@@ -746,6 +1374,14 @@
                 
                 // FIXED: Update UI to show correct initial state
                 this.updateUI();
+                
+                // MOBILE OPTIMIZATION: Initialize mobile features if on mobile
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile && window.innerWidth > window.innerHeight) {
+                    setTimeout(() => {
+                        window.initializeMobileFeatures?.();
+                    }, 500);
+                }
             }
             
             resetGame() {
@@ -1145,7 +1781,19 @@
             checkMobile() {
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 if (isMobile) {
-                    document.getElementById('mobile-controls').style.display = 'block';
+                    // Old mobile controls - hide them initially
+                    const oldControls = document.getElementById('mobile-controls');
+                    if (oldControls) {
+                        oldControls.style.display = 'none';
+                    }
+                    
+                    // Check orientation
+                    if (window.innerWidth > window.innerHeight) {
+                        // Already in landscape
+                        setTimeout(() => {
+                            window.initializeMobileFeatures?.();
+                        }, 100);
+                    }
                 }
             }
             
@@ -2528,6 +3176,17 @@
         
         // Make game globally accessible
         window.game = game;
+        
+        // MOBILE OPTIMIZATION: Initialize mobile features on page load if already in landscape
+        window.addEventListener('load', function() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile && window.innerWidth > window.innerHeight) {
+                setTimeout(() => {
+                    window.initializeMobileFeatures?.();
+                }, 500);
+            }
+        });
     </script>
 </body>
 </html>
