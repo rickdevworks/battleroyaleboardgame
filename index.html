@@ -1344,18 +1344,22 @@
                 
                 // MOBILE OPTIMIZATION: Check for mobile on constructor
                 this.checkMobile();
+                
+                // CRITICAL FIX: Initialize canvas immediately
+                this.initCanvas();
             }
             
             startGame() {
                 // Initialize game after rules are accepted
-                this.initCanvas();
+                // CRITICAL FIX: Don't call initCanvas again here - it's already called in constructor
                 this.initMap();
                 this.initPlayers();
                 this.initWeapons();
                 this.initGear();
                 this.initUI();
                 this.checkMobile();
-                this.draw();
+                
+                // CRITICAL FIX: Don't call draw here yet - it will be called in gameLoop
                 
                 // Set initial turn - FIXED: Ensure proper initialization
                 this.currentPlayer = 0;
@@ -1365,6 +1369,9 @@
                 this.aiming = false;
                 
                 this.updateTurnIndicator();
+                
+                // CRITICAL FIX: Force initial draw BEFORE starting game loop
+                this.draw();
                 
                 // Start game loop
                 this.gameLoop();
@@ -1424,7 +1431,7 @@
                 // Update UI
                 this.updateTurnIndicator();
                 this.updateUI();
-                this.draw();
+                this.draw(); // CRITICAL FIX: Force draw after reset
                 
                 // Play sound
                 this.playSound(600);
@@ -1440,6 +1447,10 @@
                 this.ctx = this.canvas.getContext('2d');
                 this.aimOverlay = document.getElementById('aim-overlay');
                 this.shotgunPreview = document.getElementById('shotgun-preview');
+                
+                // CRITICAL FIX: Clear the canvas immediately
+                this.ctx.fillStyle = '#2d5a3c'; // Green battlefield background
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 
                 // Set overlay dimensions to match canvas
                 this.aimOverlay.style.width = this.canvas.width + 'px';
@@ -2856,15 +2867,16 @@
             }
             
             draw() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                // CRITICAL FIX: Clear canvas with green background first
+                this.ctx.fillStyle = '#2d5a3c'; // Battlefield green
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 
-                // Draw outdoor map
+                // Draw grid lines
                 for (let y = 0; y < this.GRID_SIZE; y++) {
                     for (let x = 0; x < this.GRID_SIZE; x++) {
-                        const tile = this.map[y][x];
-                        
-                        // Draw tile background
+                        // Draw tile background (grid lines)
                         this.ctx.strokeStyle = '#3a7d44';
+                        this.ctx.lineWidth = 1;
                         this.ctx.strokeRect(
                             x * this.TILE_SIZE, 
                             y * this.TILE_SIZE, 
@@ -2873,6 +2885,7 @@
                         );
                         
                         // Draw tile content
+                        const tile = this.map[y][x];
                         if (tile) {
                             this.ctx.font = '28px Arial';
                             this.ctx.textAlign = 'center';
@@ -2883,6 +2896,7 @@
                             else if (tile.type === '🪨') this.ctx.fillStyle = '#757575';
                             else if (tile.type === '🏠') this.ctx.fillStyle = '#8d6e63';
                             else if (tile.type === '📦') this.ctx.fillStyle = '#ffd700';
+                            else this.ctx.fillStyle = '#ffffff';
                             
                             this.ctx.fillText(
                                 tile.type,
@@ -2910,21 +2924,23 @@
                 const offsetX = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
                 const offsetY = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
                 
+                // Draw indoor background (wooden floor)
+                this.ctx.fillStyle = '#8b4513';
+                this.ctx.fillRect(
+                    offsetX, 
+                    offsetY, 
+                    indoorSize * this.TILE_SIZE, 
+                    indoorSize * this.TILE_SIZE
+                );
+                
                 // Draw indoor map
                 for (let y = 0; y < indoorSize; y++) {
                     for (let x = 0; x < indoorSize; x++) {
                         const tile = this.currentHouse.indoorMap[y][x];
                         
-                        // Draw tile background (wooden floor)
-                        this.ctx.fillStyle = '#8b4513';
-                        this.ctx.fillRect(
-                            x * this.TILE_SIZE + offsetX, 
-                            y * this.TILE_SIZE + offsetY, 
-                            this.TILE_SIZE, 
-                            this.TILE_SIZE
-                        );
-                        
+                        // Draw tile grid
                         this.ctx.strokeStyle = '#a0522d';
+                        this.ctx.lineWidth = 1;
                         this.ctx.strokeRect(
                             x * this.TILE_SIZE + offsetX, 
                             y * this.TILE_SIZE + offsetY, 
@@ -2984,15 +3000,16 @@
                 
                 ctx.clearRect(0, 0, houseCanvas.width, houseCanvas.height);
                 
+                // Draw indoor background
+                ctx.fillStyle = '#8b4513';
+                ctx.fillRect(0, 0, houseCanvas.width, houseCanvas.height);
+                
                 // Draw indoor map
                 for (let y = 0; y < indoorSize; y++) {
                     for (let x = 0; x < indoorSize; x++) {
                         const tile = this.currentHouse.indoorMap[y][x];
                         
-                        // Draw tile background
-                        ctx.fillStyle = '#8b4513';
-                        ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-                        
+                        // Draw tile grid
                         ctx.strokeStyle = '#a0522d';
                         ctx.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
                         
