@@ -278,13 +278,6 @@
         
         #mobile-controls {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
         
         /* ADDED: Roll dice button highlight animation */
@@ -599,7 +592,6 @@
             padding: 10px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(76, 201, 240, 0.3);
-            display: none;
         }
         
         .mobile-info-compact {
@@ -649,6 +641,87 @@
             display: none;
         }
         
+        /* Mobile action buttons (right side) */
+        #mobile-action-buttons {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mobile-action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .mobile-action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .mobile-action-btn:disabled {
+            background: #666;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .mobile-info-expanded {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(76, 201, 240, 0.5);
+            z-index: 1000;
+        }
+        
+        .mobile-info-expanded.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .mobile-expanded-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        /* Force landscape warning - REMOVED the forced rotation */
+        .landscape-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
         @media (max-width: 1200px) {
             body {
                 flex-direction: column;
@@ -662,35 +735,7 @@
             }
         }
         
-        /* Force landscape on mobile */
-        @media (max-width: 768px) and (orientation: portrait) {
-            body {
-                transform: rotate(90deg);
-                transform-origin: left top;
-                width: 100vh;
-                height: 100vw;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                overflow-x: hidden;
-            }
-            
-            #rules-modal .modal-content {
-                transform: rotate(-90deg);
-                transform-origin: center center;
-                max-height: 80vw;
-                max-width: 80vh;
-            }
-            
-            #rules-modal h2 {
-                font-size: 1.5em;
-            }
-            
-            #rules-modal p, #rules-modal li {
-                font-size: 0.9em;
-            }
-        }
-        
+        /* Mobile specific styles */
         @media (max-width: 768px) {
             .mobile-only {
                 display: block;
@@ -700,106 +745,104 @@
                 display: none;
             }
             
+            body {
+                flex-direction: column;
+                min-height: 100vh;
+                overflow: auto;
+            }
+            
             #sidebar {
                 display: none;
             }
             
             #game-container {
-                padding: 5px;
+                padding: 10px;
                 width: 100vw;
                 height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
             }
             
             #game-canvas {
                 width: 95vw !important;
                 height: 95vw !important;
-                max-width: 95vh;
-                max-height: 95vh;
+                max-width: 500px;
+                max-height: 500px;
+                margin-top: 80px;
             }
             
             #mobile-controls {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                pointer-events: none;
+                z-index: 100;
+            }
+            
+            .mobile-arrow-controls,
+            #mobile-action-buttons {
+                pointer-events: auto;
             }
             
             #mobile-menu-toggle {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                pointer-events: auto;
             }
             
             #mobile-info-panel {
                 display: block;
+                pointer-events: auto;
             }
             
-            /* Mobile action buttons (right side) */
-            #mobile-action-buttons {
-                position: absolute;
-                right: 20px;
-                bottom: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
+            .turn-indicator {
+                top: 60px;
+                font-size: 16px;
+                padding: 8px 16px;
             }
             
-            .mobile-action-btn {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                border: none;
-                font-size: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: linear-gradient(135deg, #4361ee, #3a0ca3);
-                color: white;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                transition: all 0.2s;
-                cursor: pointer;
+            #dice-roll-display {
+                top: 100px;
+                font-size: 20px;
+                padding: 6px 12px;
             }
             
-            .mobile-action-btn:active {
-                transform: scale(0.95);
+            .house-indicator,
+            .exit-instruction {
+                display: none !important;
             }
             
-            .mobile-action-btn:disabled {
-                background: #666;
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-            
-            .mobile-info-expanded {
-                display: none;
-                position: absolute;
-                top: 70px;
-                left: 10px;
-                right: 10px;
-                background: rgba(0,0,0,0.9);
-                border-radius: 10px;
-                padding: 15px;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(76, 201, 240, 0.5);
-                z-index: 1000;
-            }
-            
-            .mobile-info-expanded.active {
-                display: block;
-                animation: fadeIn 0.3s ease;
-            }
-            
-            .mobile-expanded-stats {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                margin: 15px 0;
-                font-size: 14px;
+            /* Show landscape warning only in portrait mode */
+            @media (orientation: portrait) {
+                .landscape-warning {
+                    display: flex;
+                }
+                
+                #game-container,
+                #mobile-controls,
+                #mobile-info-panel {
+                    display: none;
+                }
             }
         }
     </style>
 </head>
 <body>
+    <!-- Landscape Warning for Mobile -->
+    <div class="landscape-warning">
+        <div style="max-width: 400px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📱</div>
+            <h2>Please Rotate Your Device</h2>
+            <p>This game is best played in landscape mode. Please rotate your device to continue.</p>
+        </div>
+    </div>
+
     <!-- Rules Modal -->
     <div id="rules-modal" class="modal" style="display: flex;">
         <div class="modal-content">
@@ -999,43 +1042,46 @@
             <div>Move onto the 🚪 door tile to exit</div>
         </div>
         
-        <!-- Mobile Menu Toggle -->
-        <button id="mobile-menu-toggle" onclick="game.toggleMobileMenu()">☰</button>
-        
-        <!-- Mobile Info Panel -->
-        <div id="mobile-info-panel">
-            <div class="mobile-info-compact">
-                <div class="mobile-player-info">
-                    <div id="mobile-player-color" class="mobile-player-color" style="background: #ff5252;"></div>
-                    <div>
-                        <div id="mobile-player-name" style="font-weight: bold; font-size: 16px;">P1</div>
-                        <div id="mobile-player-hp" style="font-size: 12px; color: #4CAF50;">100 HP</div>
+        <!-- Mobile UI Elements -->
+        <div id="mobile-controls" class="mobile-only">
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-toggle" onclick="game.toggleMobileMenu()">☰</button>
+            
+            <!-- Mobile Info Panel -->
+            <div id="mobile-info-panel">
+                <div class="mobile-info-compact">
+                    <div class="mobile-player-info">
+                        <div id="mobile-player-color" class="mobile-player-color" style="background: #ff5252;"></div>
+                        <div>
+                            <div id="mobile-player-name" style="font-weight: bold; font-size: 16px;">P1</div>
+                            <div id="mobile-player-hp" style="font-size: 12px; color: #4CAF50;">100 HP</div>
+                        </div>
+                        <div class="mobile-health-bar">
+                            <div id="mobile-health-fill" class="mobile-health-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div id="mobile-moves-left" style="font-weight: bold; color: #4cc9f0; font-size: 18px;">0</div>
+                </div>
+                
+                <!-- Expanded mobile info (hidden by default) -->
+                <div id="mobile-info-expanded" class="mobile-info-expanded">
+                    <h4 style="margin: 0 0 10px 0; color: #4cc9f0; text-align: center;">Player Info</h4>
+                    <div class="mobile-expanded-stats">
+                        <div>Weapon:</div>
+                        <div id="mobile-weapon">Pistol</div>
+                        <div>Armor:</div>
+                        <div id="mobile-armor">None</div>
+                        <div>Gear:</div>
+                        <div id="mobile-gear">-</div>
+                        <div>Moves Left:</div>
+                        <div id="mobile-moves-full">0</div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 12px; color: #aaa; text-align: center;">
+                        Tap outside to close
                     </div>
                 </div>
-                <div id="mobile-moves-left" style="font-weight: bold; color: #4cc9f0; font-size: 18px;">0</div>
             </div>
             
-            <!-- Expanded mobile info (hidden by default) -->
-            <div id="mobile-info-expanded" class="mobile-info-expanded">
-                <h4 style="margin: 0 0 10px 0; color: #4cc9f0; text-align: center;">Player Info</h4>
-                <div class="mobile-expanded-stats">
-                    <div>Weapon:</div>
-                    <div id="mobile-weapon">Pistol</div>
-                    <div>Armor:</div>
-                    <div id="mobile-armor">None</div>
-                    <div>Gear:</div>
-                    <div id="mobile-gear">-</div>
-                    <div>Moves Left:</div>
-                    <div id="mobile-moves-full">0</div>
-                </div>
-                <div style="margin-top: 15px; font-size: 12px; color: #aaa; text-align: center;">
-                    Tap outside to close
-                </div>
-            </div>
-        </div>
-        
-        <!-- Mobile Controls -->
-        <div id="mobile-controls" class="mobile-only">
             <!-- Arrow Controls (Nintendo-style, left side) -->
             <div class="mobile-arrow-controls">
                 <button class="mobile-arrow-btn up" onclick="game.movePlayer(0, -1)">↑</button>
@@ -1103,17 +1149,57 @@
                 // Show rules modal
                 document.getElementById('rules-modal').style.display = 'flex';
                 
-                // Setup mobile if needed
+                // Setup mobile detection
+                this.setupMobileDetection();
+            }
+            
+            setupMobileDetection() {
+                // Check if mobile and update UI accordingly
                 if (this.isMobile) {
-                    this.setupMobileUI();
+                    console.log("Mobile device detected");
+                    // Hide desktop UI
+                    document.getElementById('sidebar').style.display = 'none';
+                    
+                    // Setup orientation detection
+                    this.checkOrientation();
+                    window.addEventListener('orientationchange', () => {
+                        setTimeout(() => this.checkOrientation(), 300);
+                    });
+                    
+                    // Setup mobile UI after a short delay to ensure DOM is ready
+                    setTimeout(() => this.setupMobileUI(), 100);
+                }
+            }
+            
+            checkOrientation() {
+                const warning = document.querySelector('.landscape-warning');
+                const gameContainer = document.getElementById('game-container');
+                const mobileControls = document.getElementById('mobile-controls');
+                const mobileInfoPanel = document.getElementById('mobile-info-panel');
+                
+                if (window.innerHeight > window.innerWidth) {
+                    // Portrait mode
+                    console.log("Portrait mode detected - showing warning");
+                    if (warning) warning.style.display = 'flex';
+                    if (gameContainer) gameContainer.style.display = 'none';
+                    if (mobileControls) mobileControls.style.display = 'none';
+                    if (mobileInfoPanel) mobileInfoPanel.style.display = 'none';
+                } else {
+                    // Landscape mode
+                    console.log("Landscape mode detected - showing game");
+                    if (warning) warning.style.display = 'none';
+                    if (gameContainer) gameContainer.style.display = 'flex';
+                    if (mobileControls) mobileControls.style.display = 'block';
+                    if (mobileInfoPanel) mobileInfoPanel.style.display = 'block';
                 }
             }
             
             setupMobileUI() {
-                // Force landscape mode
-                if (window.innerHeight > window.innerWidth) {
-                    this.showLandscapeWarning();
-                }
+                console.log("Setting up mobile UI");
+                
+                // Show mobile controls
+                document.getElementById('mobile-controls').style.display = 'block';
+                document.getElementById('mobile-info-panel').style.display = 'block';
                 
                 // Setup mobile info panel click
                 const mobileInfoPanel = document.getElementById('mobile-info-panel');
@@ -1140,46 +1226,9 @@
                 // Update canvas size for mobile
                 this.updateCanvasSize();
                 window.addEventListener('resize', () => this.updateCanvasSize());
-            }
-            
-            showLandscapeWarning() {
-                if (!this.isMobile) return;
                 
-                const warning = document.createElement('div');
-                warning.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(0,0,0,0.95);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 9999;
-                    color: white;
-                    font-size: 24px;
-                    text-align: center;
-                    padding: 20px;
-                `;
-                warning.innerHTML = `
-                    <div style="max-width: 400px;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">📱</div>
-                        <h2>Please Rotate Your Device</h2>
-                        <p>This game is best played in landscape mode. Please rotate your device to continue.</p>
-                    </div>
-                `;
-                
-                document.body.appendChild(warning);
-                
-                // Remove warning when orientation changes
-                window.addEventListener('orientationchange', () => {
-                    setTimeout(() => {
-                        if (window.innerWidth > window.innerHeight) {
-                            warning.remove();
-                        }
-                    }, 300);
-                });
+                // Check initial orientation
+                this.checkOrientation();
             }
             
             updateCanvasSize() {
@@ -1188,10 +1237,14 @@
                 const canvas = document.getElementById('game-canvas');
                 const container = document.getElementById('game-container');
                 
-                const size = Math.min(
-                    container.clientWidth * 0.9,
-                    container.clientHeight * 0.9
-                );
+                if (!canvas || !container) return;
+                
+                // Calculate size based on container
+                const containerWidth = container.clientWidth;
+                const containerHeight = container.clientHeight;
+                const size = Math.min(containerWidth * 0.85, containerHeight * 0.70);
+                
+                console.log("Updating canvas size:", { containerWidth, containerHeight, size });
                 
                 canvas.width = size;
                 canvas.height = size;
@@ -1212,12 +1265,14 @@
                 // Redraw
                 if (this.isIndoor) {
                     this.drawIndoor();
-                } else {
+                } else if (this.gameActive) {
                     this.draw();
                 }
             }
             
             startGame() {
+                console.log("Starting game, mobile:", this.isMobile);
+                
                 // Initialize game after rules are accepted
                 this.initCanvas();
                 this.initMap();
@@ -1225,7 +1280,6 @@
                 this.initWeapons();
                 this.initGear();
                 this.initUI();
-                this.checkMobile();
                 this.draw();
                 
                 // Set initial turn - FIXED: Ensure proper initialization
@@ -1246,15 +1300,20 @@
                 // FIXED: Update UI to show correct initial state
                 this.updateUI();
                 
-                // Setup mobile UI
+                // Setup mobile UI if needed
                 if (this.isMobile) {
                     this.setupMobileControls();
+                    this.updateCanvasSize();
                 }
             }
             
             setupMobileControls() {
+                console.log("Setting up mobile controls");
                 // Enable mobile controls
-                document.getElementById('mobile-controls').style.display = 'flex';
+                const mobileControls = document.getElementById('mobile-controls');
+                if (mobileControls) {
+                    mobileControls.style.display = 'block';
+                }
                 
                 // Setup touch events for arrows
                 const arrowBtns = document.querySelectorAll('.mobile-arrow-btn');
@@ -1267,6 +1326,20 @@
                     btn.addEventListener('touchend', (e) => {
                         e.preventDefault();
                         btn.style.transform = btn.style.transform.replace('scale(0.95)', 'scale(1)');
+                    });
+                });
+                
+                // Setup touch events for action buttons
+                const actionBtns = document.querySelectorAll('.mobile-action-btn');
+                actionBtns.forEach(btn => {
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        btn.style.transform = 'scale(0.95)';
+                    });
+                    
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        btn.style.transform = 'scale(1)';
                     });
                 });
             }
@@ -1352,11 +1425,22 @@
                 this.aimOverlay = document.getElementById('aim-overlay');
                 this.shotgunPreview = document.getElementById('shotgun-preview');
                 
+                if (!this.canvas || !this.ctx) {
+                    console.error("Canvas initialization failed!");
+                    return;
+                }
+                
+                console.log("Canvas initialized, mobile:", this.isMobile);
+                
                 // Set overlay dimensions to match canvas
-                this.aimOverlay.style.width = this.canvas.width + 'px';
-                this.aimOverlay.style.height = this.canvas.height + 'px';
-                this.shotgunPreview.style.width = this.canvas.width + 'px';
-                this.shotgunPreview.style.height = this.canvas.height + 'px';
+                if (this.aimOverlay) {
+                    this.aimOverlay.style.width = this.canvas.width + 'px';
+                    this.aimOverlay.style.height = this.canvas.height + 'px';
+                }
+                if (this.shotgunPreview) {
+                    this.shotgunPreview.style.width = this.canvas.width + 'px';
+                    this.shotgunPreview.style.height = this.canvas.height + 'px';
+                }
                 
                 // Focus canvas for keyboard controls
                 this.canvas.addEventListener('click', () => {
@@ -1690,12 +1774,6 @@
                 this.updateControlStatus();
             }
             
-            checkMobile() {
-                if (this.isMobile) {
-                    document.getElementById('mobile-controls').style.display = 'flex';
-                }
-            }
-            
             updateControlStatus() {
                 const controlsToggle = document.getElementById('controls-toggle');
                 if (controlsToggle) {
@@ -1720,42 +1798,63 @@
                     healthBar.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
                 }
                 
-                healthBar.style.width = healthPercent + '%';
-                healthText.textContent = `${player.hp} HP`;
+                if (healthBar) healthBar.style.width = healthPercent + '%';
+                if (healthText) healthText.textContent = `${player.hp} HP`;
                 
                 // Update sidebar info with player color
                 const playerColors = ['#ff5252', '#2196F3', '#ffeb3b', '#e91e63'];
-                document.getElementById('current-player').textContent = this.currentPlayer + 1;
-                document.getElementById('current-player').style.color = playerColors[this.currentPlayer];
+                const currentPlayerEl = document.getElementById('current-player');
+                if (currentPlayerEl) {
+                    currentPlayerEl.textContent = this.currentPlayer + 1;
+                    currentPlayerEl.style.color = playerColors[this.currentPlayer];
+                }
                 
-                document.getElementById('player-health').textContent = player.hp;
-                document.getElementById('player-weapon').textContent = this.weapons[player.weapon].name;
-                document.getElementById('moves-left').textContent = this.movesLeft;
-                document.getElementById('player-armor').textContent = player.armor ? player.armor.name : 'None';
+                const playerHealthEl = document.getElementById('player-health');
+                if (playerHealthEl) playerHealthEl.textContent = player.hp;
+                
+                const playerWeaponEl = document.getElementById('player-weapon');
+                if (playerWeaponEl) playerWeaponEl.textContent = this.weapons[player.weapon].name;
+                
+                const movesLeftEl = document.getElementById('moves-left');
+                if (movesLeftEl) movesLeftEl.textContent = this.movesLeft;
+                
+                const playerArmorEl = document.getElementById('player-armor');
+                if (playerArmorEl) playerArmorEl.textContent = player.armor ? player.armor.name : 'None';
                 
                 // Update gear display
                 const gearEl = document.getElementById('player-gear');
-                if (player.gear.length > 0) {
-                    gearEl.innerHTML = player.gear.map(g => g.emoji).join(' ');
-                } else {
-                    gearEl.textContent = '-';
+                if (gearEl) {
+                    if (player.gear.length > 0) {
+                        gearEl.innerHTML = player.gear.map(g => g.emoji).join(' ');
+                    } else {
+                        gearEl.textContent = '-';
+                    }
                 }
                 
                 // Update buttons
                 const rollDiceBtn = document.getElementById('roll-dice');
-                rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
-                
-                // ADDED: Highlight roll dice button when it's player's turn and hasn't rolled
-                if (!this.hasRolled && !this.isIndoor && this.gameActive) {
-                    rollDiceBtn.classList.add('roll-dice-highlight');
-                } else {
-                    rollDiceBtn.classList.remove('roll-dice-highlight');
+                if (rollDiceBtn) {
+                    rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
+                    
+                    // ADDED: Highlight roll dice button when it's player's turn and hasn't rolled
+                    if (!this.hasRolled && !this.isIndoor && this.gameActive) {
+                        rollDiceBtn.classList.add('roll-dice-highlight');
+                    } else {
+                        rollDiceBtn.classList.remove('roll-dice-highlight');
+                    }
                 }
                 
-                document.getElementById('enter-aim').disabled = this.hasShot || this.aiming;
-                document.getElementById('shoot').disabled = !this.aiming || this.hasShot;
-                document.getElementById('end-turn').disabled = false;
-                document.getElementById('reset-game').disabled = false;
+                const enterAimBtn = document.getElementById('enter-aim');
+                if (enterAimBtn) enterAimBtn.disabled = this.hasShot || this.aiming;
+                
+                const shootBtn = document.getElementById('shoot');
+                if (shootBtn) shootBtn.disabled = !this.aiming || this.hasShot;
+                
+                const endTurnBtn = document.getElementById('end-turn');
+                if (endTurnBtn) endTurnBtn.disabled = false;
+                
+                const resetGameBtn = document.getElementById('reset-game');
+                if (resetGameBtn) resetGameBtn.disabled = false;
                 
                 // Update mobile buttons
                 if (this.isMobile) {
@@ -1768,27 +1867,31 @@
                 const locationEl = document.getElementById('location-indicator');
                 
                 if (this.isIndoor) {
-                    locationEl.innerHTML = `Location: <span class="status-combat">House ${this.currentHouse.x},${this.currentHouse.y}</span>`;
-                    statusEl.textContent = 'Indoor combat! Use arrow keys to move and aim. Find food (🍎🍗🥤) to heal. Move onto 🚪 to exit.';
+                    if (locationEl) locationEl.innerHTML = `Location: <span class="status-combat">House ${this.currentHouse.x},${this.currentHouse.y}</span>`;
+                    if (statusEl) statusEl.textContent = 'Indoor combat! Use arrow keys to move and aim. Find food (🍎🍗🥤) to heal. Move onto 🚪 to exit.';
                     
                     // Show exit instruction
-                    document.getElementById('exit-instruction').style.display = 'block';
+                    const exitInstruction = document.getElementById('exit-instruction');
+                    if (exitInstruction) exitInstruction.style.display = 'block';
                 } else {
-                    locationEl.innerHTML = 'Location: <span class="status-active">Outdoor</span>';
-                    document.getElementById('exit-instruction').style.display = 'none';
+                    if (locationEl) locationEl.innerHTML = 'Location: <span class="status-active">Outdoor</span>';
+                    const exitInstruction = document.getElementById('exit-instruction');
+                    if (exitInstruction) exitInstruction.style.display = 'none';
                     
                     if (!this.aiming) {
-                        modeEl.innerHTML = `Mode: <span class="${this.movesLeft > 0 ? 'status-active' : 'status-waiting'}">${this.movesLeft > 0 ? 'MOVING' : 'WAITING'}</span>`;
-                        if (this.hasRolled) {
-                            statusEl.textContent = this.movesLeft > 0 ? 
-                                `Use arrow keys or WASD to move (${this.movesLeft} moves left)` :
-                                'Movement complete. You can aim or end turn.';
-                        } else {
-                            statusEl.textContent = 'Click "Roll Dice" to start moving (one roll per turn)';
+                        if (modeEl) modeEl.innerHTML = `Mode: <span class="${this.movesLeft > 0 ? 'status-active' : 'status-waiting'}">${this.movesLeft > 0 ? 'MOVING' : 'WAITING'}</span>`;
+                        if (statusEl) {
+                            if (this.hasRolled) {
+                                statusEl.textContent = this.movesLeft > 0 ? 
+                                    `Use arrow keys or WASD to move (${this.movesLeft} moves left)` :
+                                    'Movement complete. You can aim or end turn.';
+                            } else {
+                                statusEl.textContent = 'Click "Roll Dice" to start moving (one roll per turn)';
+                            }
                         }
                     } else {
-                        modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                        statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
+                        if (modeEl) modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
+                        if (statusEl) statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
                     }
                 }
                 
@@ -1804,27 +1907,34 @@
                 const playerColors = ['#ff5252', '#2196F3', '#ffeb3b', '#e91e63'];
                 
                 // Update mobile info panel
-                document.getElementById('mobile-player-color').style.background = playerColors[this.currentPlayer];
-                document.getElementById('mobile-player-name').textContent = `P${this.currentPlayer + 1}`;
-                document.getElementById('mobile-player-hp').textContent = `${player.hp} HP`;
-                document.getElementById('mobile-moves-left').textContent = this.movesLeft;
+                const mobilePlayerColor = document.getElementById('mobile-player-color');
+                if (mobilePlayerColor) mobilePlayerColor.style.background = playerColors[this.currentPlayer];
+                
+                const mobilePlayerName = document.getElementById('mobile-player-name');
+                if (mobilePlayerName) mobilePlayerName.textContent = `P${this.currentPlayer + 1}`;
+                
+                const mobilePlayerHp = document.getElementById('mobile-player-hp');
+                if (mobilePlayerHp) mobilePlayerHp.textContent = `${player.hp} HP`;
+                
+                const mobileMovesLeft = document.getElementById('mobile-moves-left');
+                if (mobileMovesLeft) mobileMovesLeft.textContent = this.movesLeft;
                 
                 // Update mobile expanded info
-                document.getElementById('mobile-weapon').textContent = this.weapons[player.weapon].name;
-                document.getElementById('mobile-armor').textContent = player.armor ? player.armor.name : 'None';
-                document.getElementById('mobile-gear').textContent = player.gear.length > 0 ? player.gear.map(g => g.emoji).join(' ') : '-';
-                document.getElementById('mobile-moves-full').textContent = this.movesLeft;
+                const mobileWeapon = document.getElementById('mobile-weapon');
+                if (mobileWeapon) mobileWeapon.textContent = this.weapons[player.weapon].name;
                 
-                // Update mobile buttons state
-                document.getElementById('mobile-roll-dice').disabled = this.hasRolled || this.isIndoor;
-                document.getElementById('mobile-enter-aim').disabled = this.hasShot || this.aiming;
-                document.getElementById('mobile-shoot').disabled = !this.aiming || this.hasShot;
-                document.getElementById('mobile-end-turn').disabled = false;
-                document.getElementById('mobile-reset-game').disabled = false;
+                const mobileArmor = document.getElementById('mobile-armor');
+                if (mobileArmor) mobileArmor.textContent = player.armor ? player.armor.name : 'None';
+                
+                const mobileGear = document.getElementById('mobile-gear');
+                if (mobileGear) mobileGear.textContent = player.gear.length > 0 ? player.gear.map(g => g.emoji).join(' ') : '-';
+                
+                const mobileMovesFull = document.getElementById('mobile-moves-full');
+                if (mobileMovesFull) mobileMovesFull.textContent = this.movesLeft;
                 
                 // Update mobile health bar
                 const healthPercent = (player.hp / player.maxHp) * 100;
-                const mobileHealthFill = document.querySelector('.mobile-health-fill');
+                const mobileHealthFill = document.getElementById('mobile-health-fill');
                 if (mobileHealthFill) {
                     mobileHealthFill.style.width = healthPercent + '%';
                     
@@ -1836,6 +1946,22 @@
                         mobileHealthFill.style.background = 'linear-gradient(90deg, #f44336, #ff5252)';
                     }
                 }
+                
+                // Update mobile buttons state
+                const mobileRollDice = document.getElementById('mobile-roll-dice');
+                if (mobileRollDice) mobileRollDice.disabled = this.hasRolled || this.isIndoor;
+                
+                const mobileEnterAim = document.getElementById('mobile-enter-aim');
+                if (mobileEnterAim) mobileEnterAim.disabled = this.hasShot || this.aiming;
+                
+                const mobileShoot = document.getElementById('mobile-shoot');
+                if (mobileShoot) mobileShoot.disabled = !this.aiming || this.hasShot;
+                
+                const mobileEndTurn = document.getElementById('mobile-end-turn');
+                if (mobileEndTurn) mobileEndTurn.disabled = false;
+                
+                const mobileResetGame = document.getElementById('mobile-reset-game');
+                if (mobileResetGame) mobileResetGame.disabled = false;
             }
             
             updateWeaponInfo() {
@@ -1848,8 +1974,11 @@
                     if (g.effect === 'rangeBonus') range += g.value;
                 });
                 
-                document.getElementById('weapon-name').textContent = weapon.name;
-                document.getElementById('weapon-stats').innerHTML = 
+                const weaponName = document.getElementById('weapon-name');
+                if (weaponName) weaponName.textContent = weapon.name;
+                
+                const weaponStats = document.getElementById('weapon-stats');
+                if (weaponStats) weaponStats.innerHTML = 
                     `Damage: ${weapon.damage} | Range: ${range} | Type: ${weapon.type}`;
                 
                 // Show shotgun spread preview
@@ -1859,6 +1988,8 @@
             updateHouseIndicator() {
                 const indicator = document.getElementById('house-indicator');
                 const playersEl = document.getElementById('house-players');
+                
+                if (!indicator || !playersEl) return;
                 
                 let anyHouseOccupied = false;
                 let houseInfo = '';
@@ -1885,6 +2016,8 @@
             
             updateTurnIndicator() {
                 const indicator = document.getElementById('turn-indicator');
+                if (!indicator) return;
+                
                 const colors = ['player-1', 'player-2', 'player-3', 'player-4'];
                 
                 indicator.textContent = `Player ${this.currentPlayer + 1}'s Turn`;
@@ -1941,13 +2074,15 @@
                 // Show dice roll on mobile
                 if (this.isMobile) {
                     const diceDisplay = document.getElementById('dice-roll-display');
-                    diceDisplay.textContent = `🎲 ${dice1} + ${dice2} = ${this.movesLeft}`;
-                    diceDisplay.style.display = 'block';
-                    
-                    // Hide after 2 seconds
-                    setTimeout(() => {
-                        diceDisplay.style.display = 'none';
-                    }, 2000);
+                    if (diceDisplay) {
+                        diceDisplay.textContent = `🎲 ${dice1} + ${dice2} = ${this.movesLeft}`;
+                        diceDisplay.style.display = 'block';
+                        
+                        // Hide after 2 seconds
+                        setTimeout(() => {
+                            diceDisplay.style.display = 'none';
+                        }, 2000);
+                    }
                 }
                 
                 this.playSound(800);
@@ -2163,10 +2298,10 @@
                     `<span style="color: ${this.getPlayerColor(pid)}">Player ${pid + 1}</span>`
                 ).join(' and ');
                 
-                houseMessage.innerHTML = `${playerNames} are fighting inside the house! Move onto 🚪 to exit.`;
+                if (houseMessage) houseMessage.innerHTML = `${playerNames} are fighting inside the house! Move onto 🚪 to exit.`;
                 
                 // Show modal
-                houseModal.style.display = 'flex';
+                if (houseModal) houseModal.style.display = 'flex';
                 
                 // Draw indoor map
                 this.drawIndoorCombat();
@@ -2471,7 +2606,9 @@
             
             updateAimCursor() {
                 // Clear previous cursor
-                this.aimOverlay.innerHTML = '';
+                if (this.aimOverlay) {
+                    this.aimOverlay.innerHTML = '';
+                }
                 
                 if (!this.aiming) return;
                 
@@ -2496,12 +2633,16 @@
                 cursor.style.width = this.TILE_SIZE + 'px';
                 cursor.style.height = this.TILE_SIZE + 'px';
                 
-                this.aimOverlay.appendChild(cursor);
+                if (this.aimOverlay) {
+                    this.aimOverlay.appendChild(cursor);
+                }
             }
             
             updateShotgunPreview() {
                 // Clear previous preview
-                this.shotgunPreview.innerHTML = '';
+                if (this.shotgunPreview) {
+                    this.shotgunPreview.innerHTML = '';
+                }
                 
                 if (!this.aiming) return;
                 
@@ -2547,7 +2688,9 @@
                     cell.style.width = this.TILE_SIZE + 'px';
                     cell.style.height = this.TILE_SIZE + 'px';
                     
-                    this.shotgunPreview.appendChild(cell);
+                    if (this.shotgunPreview) {
+                        this.shotgunPreview.appendChild(cell);
+                    }
                 });
             }
             
@@ -2579,8 +2722,8 @@
                 // Reset aim state
                 this.hasShot = true;
                 this.aiming = false;
-                this.aimOverlay.innerHTML = '';
-                this.shotgunPreview.innerHTML = '';
+                if (this.aimOverlay) this.aimOverlay.innerHTML = '';
+                if (this.shotgunPreview) this.shotgunPreview.innerHTML = '';
                 
                 this.updateUI();
                 if (this.isIndoor) {
@@ -2805,8 +2948,8 @@
                     dy: null,
                     steps: 0
                 };
-                this.aimOverlay.innerHTML = '';
-                this.shotgunPreview.innerHTML = '';
+                if (this.aimOverlay) this.aimOverlay.innerHTML = '';
+                if (this.shotgunPreview) this.shotgunPreview.innerHTML = '';
                 
                 // Move to next alive player
                 let attempts = 0;
@@ -2835,6 +2978,11 @@
             }
             
             draw() {
+                if (!this.canvas || !this.ctx) {
+                    console.error("Cannot draw: canvas not initialized");
+                    return;
+                }
+                
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
                 // Draw outdoor map
@@ -2881,7 +3029,7 @@
             }
             
             drawIndoor() {
-                if (!this.currentHouse) return;
+                if (!this.currentHouse || !this.canvas || !this.ctx) return;
                 
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
@@ -2957,6 +3105,8 @@
             
             drawIndoorCombat() {
                 const houseCanvas = document.getElementById('house-canvas');
+                if (!houseCanvas) return;
+                
                 const ctx = houseCanvas.getContext('2d');
                 const indoorSize = 8;
                 const tileSize = Math.floor(houseCanvas.width / indoorSize);
@@ -3041,6 +3191,8 @@
             }
             
             drawPlayer(player, index, x, y, offsetX = 0, offsetY = 0) {
+                if (!this.ctx) return;
+                
                 const screenX = x * this.TILE_SIZE + offsetX;
                 const screenY = y * this.TILE_SIZE + offsetY;
                 
@@ -3157,13 +3309,21 @@
         // Make game globally accessible
         window.game = game;
         
-        // Handle orientation change for mobile
+        // Handle orientation change
         window.addEventListener('orientationchange', () => {
             setTimeout(() => {
                 if (game.isMobile) {
+                    game.checkOrientation();
                     game.updateCanvasSize();
                 }
             }, 300);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (game.isMobile) {
+                game.updateCanvasSize();
+            }
         });
     </script>
 </body>
