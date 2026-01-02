@@ -365,11 +365,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 8px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
-            border-radius: 50px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            gap: 5px;
             width: 180px;
             height: 180px;
         }
@@ -378,12 +374,8 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 20px;
-            border-radius: 50px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
             align-items: center;
-            width: 180px;
+            width: 200px;
         }
         
         .mobile-btn {
@@ -402,6 +394,7 @@
             transition: all 0.1s;
             margin: 0;
             padding: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         
         .mobile-btn:active {
@@ -419,6 +412,10 @@
         
         .mobile-btn.success {
             background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+        
+        .mobile-btn.reset {
+            background: linear-gradient(135deg, #ff5722, #e64a19);
         }
         
         .dice-display {
@@ -639,13 +636,7 @@
             }
             
             #sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 2px solid #4cc9f0;
-                transform: translateY(0);
-                position: relative;
-                z-index: 1;
+                display: none; /* Hide sidebar on mobile */
             }
             
             #game-info-panel {
@@ -659,6 +650,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
+                align-items: center;
             }
             
             #game-canvas {
@@ -667,7 +659,6 @@
                 aspect-ratio: 1 / 1;
                 max-width: min(100vh - 200px, 100vw - 20px);
                 max-height: min(100vh - 200px, 100vw - 20px);
-                align-self: center;
             }
             
             #mobile-controls {
@@ -714,14 +705,18 @@
                 max-height: 95vw;
             }
             
-            .directional-pad, .action-buttons {
-                width: 150px;
-                height: 150px;
+            .directional-pad {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .action-buttons {
+                width: 180px;
             }
             
             .mobile-btn {
-                width: 60px;
-                height: 60px;
+                width: 65px;
+                height: 65px;
                 font-size: 24px;
             }
             
@@ -752,14 +747,18 @@
                 max-height: 70vh;
             }
             
-            .directional-pad, .action-buttons {
-                width: 130px;
-                height: 130px;
+            .directional-pad {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .action-buttons {
+                width: 160px;
             }
             
             .mobile-btn {
-                width: 50px;
-                height: 50px;
+                width: 55px;
+                height: 55px;
                 font-size: 20px;
             }
             
@@ -777,11 +776,20 @@
             }
             
             #sidebar {
+                display: flex; /* Show sidebar in landscape on mobile */
                 width: 280px;
                 height: 100vh;
                 overflow-y: auto;
                 border-right: 2px solid #4cc9f0;
                 border-bottom: none;
+            }
+            
+            #burger-menu {
+                display: none; /* Hide burger in landscape */
+            }
+            
+            #mobile-controls {
+                display: none; /* Hide mobile controls in landscape */
             }
             
             #game-container {
@@ -791,21 +799,6 @@
             #game-canvas {
                 max-width: 90vh;
                 max-height: 90vh;
-            }
-            
-            .mobile-controls-group {
-                padding: 0 10px;
-            }
-            
-            .directional-pad, .action-buttons {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .mobile-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 18px;
             }
         }
     </style>
@@ -897,7 +890,7 @@
                 <div class="weapon-card shotgun-card">
                     <strong>🔫 Shotgun</strong><br>
                     Damage: 30 | Range: 3<br>
-                    Spread pattern (3 tiles)
+                    Short-range spread
                 </div>
                 <div class="weapon-card smg-card">
                     <strong>🔫 SMG</strong><br>
@@ -973,7 +966,7 @@
         </div>
     </div>
 
-    <!-- Main Game UI -->
+    <!-- Main Game UI (Desktop) -->
     <div id="sidebar">
         <div class="player-info">
             <h3>🎮 BATTLE ROYALE</h3>
@@ -1075,7 +1068,8 @@
                 <div class="action-buttons">
                     <button class="mobile-btn warning" id="mobile-roll-dice" onclick="game.rollDice()" ontouchstart="event.preventDefault(); game.rollDice()">🎲</button>
                     <button class="mobile-btn" id="mobile-shoot" onclick="game.shoot()" ontouchstart="event.preventDefault(); game.shoot()">🔥</button>
-                    <button class="mobile-btn danger" id="mobile-end-turn" onclick="game.endTurn()" ontouchstart="event.preventDefault(); game.endTurn()">⏭️</button>
+                    <button class="mobile-btn" id="mobile-end-turn" onclick="game.endTurn()" ontouchstart="event.preventDefault(); game.endTurn()">⏭️</button>
+                    <button class="mobile-btn reset" id="mobile-reset" onclick="game.resetGame()" ontouchstart="event.preventDefault(); game.resetGame()">🔄</button>
                 </div>
             </div>
         </div>
@@ -1367,9 +1361,44 @@
                 this.map = [];
                 this.houses = [];
                 
+                // Define player starting positions
+                const playerStarts = [
+                    [0, this.GRID_SIZE-1],    // Player 1: bottom-left
+                    [0, 0],                    // Player 2: top-left
+                    [this.GRID_SIZE-1, 0],     // Player 3: top-right
+                    [this.GRID_SIZE-1, this.GRID_SIZE-1]  // Player 4: bottom-right
+                ];
+                
+                // Create clear paths from starting positions
+                const clearPaths = [];
+                playerStarts.forEach(([x, y]) => {
+                    // Clear the starting position
+                    clearPaths.push([x, y]);
+                    
+                    // Clear one tile in each direction from start
+                    if (x > 0) clearPaths.push([x-1, y]);
+                    if (x < this.GRID_SIZE-1) clearPaths.push([x+1, y]);
+                    if (y > 0) clearPaths.push([x, y-1]);
+                    if (y < this.GRID_SIZE-1) clearPaths.push([x, y+1]);
+                    
+                    // Clear diagonal paths too
+                    if (x > 0 && y > 0) clearPaths.push([x-1, y-1]);
+                    if (x > 0 && y < this.GRID_SIZE-1) clearPaths.push([x-1, y+1]);
+                    if (x < this.GRID_SIZE-1 && y > 0) clearPaths.push([x+1, y-1]);
+                    if (x < this.GRID_SIZE-1 && y < this.GRID_SIZE-1) clearPaths.push([x+1, y+1]);
+                });
+                
                 for (let y = 0; y < this.GRID_SIZE; y++) {
                     this.map[y] = [];
                     for (let x = 0; x < this.GRID_SIZE; x++) {
+                        // Check if this tile should be cleared for player paths
+                        const isOnPath = clearPaths.some(([px, py]) => px === x && py === y);
+                        
+                        if (isOnPath) {
+                            this.map[y][x] = null;
+                            continue;
+                        }
+                        
                         const r = Math.random();
                         if (r < 0.08) {
                             this.map[y][x] = { type: '🌳', blocks: true, cover: true };
@@ -1392,18 +1421,6 @@
                         }
                     }
                 }
-                
-                // Ensure starting corners are clear
-                const corners = [
-                    [0, this.GRID_SIZE-1],
-                    [0, 0],
-                    [this.GRID_SIZE-1, 0],
-                    [this.GRID_SIZE-1, this.GRID_SIZE-1]
-                ];
-                
-                corners.forEach(([x, y]) => {
-                    this.map[y][x] = null;
-                });
             }
             
             createIndoorMap() {
@@ -1664,6 +1681,7 @@
                     const rollBtn = document.getElementById('mobile-roll-dice');
                     const shootBtn = document.getElementById('mobile-shoot');
                     const endTurnBtn = document.getElementById('mobile-end-turn');
+                    const resetBtn = document.getElementById('mobile-reset');
                     
                     if (rollBtn) {
                         rollBtn.disabled = this.hasRolled || this.isIndoor;
@@ -1680,6 +1698,10 @@
                     
                     if (endTurnBtn) {
                         endTurnBtn.disabled = false;
+                    }
+                    
+                    if (resetBtn) {
+                        resetBtn.disabled = false;
                     }
                 }, 100);
             }
@@ -1728,18 +1750,25 @@
                 
                 // Update buttons
                 const rollDiceBtn = document.getElementById('roll-dice');
-                rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
-                
-                if (!this.hasRolled && !this.isIndoor && this.gameActive) {
-                    rollDiceBtn.classList.add('roll-dice-highlight');
-                } else {
-                    rollDiceBtn.classList.remove('roll-dice-highlight');
+                if (rollDiceBtn) {
+                    rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
+                    
+                    if (!this.hasRolled && !this.isIndoor && this.gameActive) {
+                        rollDiceBtn.classList.add('roll-dice-highlight');
+                    } else {
+                        rollDiceBtn.classList.remove('roll-dice-highlight');
+                    }
                 }
                 
-                document.getElementById('enter-aim').disabled = this.hasShot || this.aiming;
-                document.getElementById('shoot').disabled = !this.aiming || this.hasShot;
-                document.getElementById('end-turn').disabled = false;
-                document.getElementById('reset-game').disabled = false;
+                const enterAimBtn = document.getElementById('enter-aim');
+                const shootBtn = document.getElementById('shoot');
+                const endTurnBtn = document.getElementById('end-turn');
+                const resetBtn = document.getElementById('reset-game');
+                
+                if (enterAimBtn) enterAimBtn.disabled = this.hasShot || this.aiming;
+                if (shootBtn) shootBtn.disabled = !this.aiming || this.hasShot;
+                if (endTurnBtn) endTurnBtn.disabled = false;
+                if (resetBtn) resetBtn.disabled = false;
                 
                 // Update status
                 const statusEl = document.getElementById('status-text');
@@ -1747,27 +1776,29 @@
                 const locationEl = document.getElementById('location-indicator');
                 
                 if (this.isIndoor) {
-                    locationEl.innerHTML = `Location: <span class="status-combat">House ${this.currentHouse.x},${this.currentHouse.y}</span>`;
-                    statusEl.textContent = 'Indoor combat! Use arrow keys to move and aim. Find food (🍎🍗🥤) to heal. Move onto 🚪 to exit.';
+                    if (locationEl) locationEl.innerHTML = `Location: <span class="status-combat">House ${this.currentHouse.x},${this.currentHouse.y}</span>`;
+                    if (statusEl) statusEl.textContent = 'Indoor combat! Use arrow keys to move and aim. Find food (🍎🍗🥤) to heal. Move onto 🚪 to exit.';
                     
                     // Show exit instruction
                     document.getElementById('exit-instruction').style.display = 'block';
                 } else {
-                    locationEl.innerHTML = 'Location: <span class="status-active">Outdoor</span>';
+                    if (locationEl) locationEl.innerHTML = 'Location: <span class="status-active">Outdoor</span>';
                     document.getElementById('exit-instruction').style.display = 'none';
                     
                     if (!this.aiming) {
-                        modeEl.innerHTML = `Mode: <span class="${this.movesLeft > 0 ? 'status-active' : 'status-waiting'}">${this.movesLeft > 0 ? 'MOVING' : 'WAITING'}</span>`;
-                        if (this.hasRolled) {
-                            statusEl.textContent = this.movesLeft > 0 ? 
-                                `Use arrow keys or WASD to move (${this.movesLeft} moves left)` :
-                                'Movement complete. You can aim or end turn.';
-                        } else {
-                            statusEl.textContent = 'Click "Roll Dice" to start moving (one roll per turn)';
+                        if (modeEl) modeEl.innerHTML = `Mode: <span class="${this.movesLeft > 0 ? 'status-active' : 'status-waiting'}">${this.movesLeft > 0 ? 'MOVING' : 'WAITING'}</span>`;
+                        if (statusEl) {
+                            if (this.hasRolled) {
+                                statusEl.textContent = this.movesLeft > 0 ? 
+                                    `Use arrow keys or WASD to move (${this.movesLeft} moves left)` :
+                                    'Movement complete. You can aim or end turn.';
+                            } else {
+                                statusEl.textContent = 'Click "Roll Dice" to start moving (one roll per turn)';
+                            }
                         }
                     } else {
-                        modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                        statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
+                        if (modeEl) modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
+                        if (statusEl) statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
                     }
                 }
                 
@@ -1791,8 +1822,11 @@
                     if (g.effect === 'rangeBonus') range += g.value;
                 });
                 
-                document.getElementById('weapon-name').textContent = weapon.name;
-                document.getElementById('weapon-stats').innerHTML = 
+                const weaponNameEl = document.getElementById('weapon-name');
+                const weaponStatsEl = document.getElementById('weapon-stats');
+                
+                if (weaponNameEl) weaponNameEl.textContent = weapon.name;
+                if (weaponStatsEl) weaponStatsEl.innerHTML = 
                     `Damage: ${weapon.damage} | Range: ${range} | Type: ${weapon.type}`;
                 
                 // Show shotgun spread preview
@@ -2366,25 +2400,32 @@
                 if (!this.aiming) return;
                 
                 // Calculate position based on indoor/outdoor
-                let x, y;
+                let x, y, tileSize;
                 if (this.isIndoor) {
                     // Center the indoor map on canvas
                     const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
                     const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
                     x = this.aim.x * this.TILE_SIZE + indoorOffsetX;
                     y = this.aim.y * this.TILE_SIZE + indoorOffsetY;
+                    tileSize = this.TILE_SIZE;
                 } else {
                     x = this.aim.x * this.TILE_SIZE;
                     y = this.aim.y * this.TILE_SIZE;
+                    tileSize = this.TILE_SIZE;
                 }
+                
+                // Ensure the cursor stays within canvas bounds
+                const canvasRect = this.canvas.getBoundingClientRect();
+                const canvasX = parseInt(this.canvas.style.left || 0);
+                const canvasY = parseInt(this.canvas.style.top || 0);
                 
                 // Create new cursor
                 const cursor = document.createElement('div');
                 cursor.className = 'aim-cell';
                 cursor.style.left = x + 'px';
                 cursor.style.top = y + 'px';
-                cursor.style.width = this.TILE_SIZE + 'px';
-                cursor.style.height = this.TILE_SIZE + 'px';
+                cursor.style.width = tileSize + 'px';
+                cursor.style.height = tileSize + 'px';
                 
                 this.aimOverlay.appendChild(cursor);
             }
@@ -2419,23 +2460,25 @@
                     if (x < 0 || y < 0 || x >= maxX || y >= maxY) return;
                     
                     // Calculate position
-                    let posX, posY;
+                    let posX, posY, tileSize;
                     if (this.isIndoor) {
                         const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
                         const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
                         posX = x * this.TILE_SIZE + indoorOffsetX;
                         posY = y * this.TILE_SIZE + indoorOffsetY;
+                        tileSize = this.TILE_SIZE;
                     } else {
                         posX = x * this.TILE_SIZE;
                         posY = y * this.TILE_SIZE;
+                        tileSize = this.TILE_SIZE;
                     }
                     
                     const cell = document.createElement('div');
                     cell.className = 'shotgun-cell';
                     cell.style.left = posX + 'px';
                     cell.style.top = posY + 'px';
-                    cell.style.width = this.TILE_SIZE + 'px';
-                    cell.style.height = this.TILE_SIZE + 'px';
+                    cell.style.width = tileSize + 'px';
+                    cell.style.height = tileSize + 'px';
                     
                     this.shotgunPreview.appendChild(cell);
                 });
