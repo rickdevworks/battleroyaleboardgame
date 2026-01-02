@@ -10,6 +10,60 @@
             -webkit-tap-highlight-color: transparent;
         }
         
+        /* Portrait warning overlay */
+        #portrait-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .warning-content {
+            background: rgba(42, 42, 66, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            border: 3px solid #4cc9f0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+        }
+        
+        .warning-content h2 {
+            color: #4cc9f0;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .warning-content p {
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .rotate-icon {
+            font-size: 80px;
+            margin: 20px 0;
+            color: #4cc9f0;
+            animation: rotate 2s infinite ease-in-out;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-90deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
         body {
             margin: 0;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -21,9 +75,9 @@
             touch-action: manipulation;
         }
         
-        /* Burger menu */
+        /* Burger menu - Always visible in landscape */
         #burger-menu {
-            display: none;
+            display: flex;
             position: fixed;
             top: 15px;
             left: 15px;
@@ -60,15 +114,7 @@
         }
         
         #sidebar {
-            width: 300px;
-            background: rgba(42, 42, 66, 0.9);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            border-right: 2px solid #4cc9f0;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
+            display: none; /* Always hidden in mobile landscape */
         }
         
         #game-container {
@@ -79,6 +125,7 @@
             padding: 20px;
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
         
         #game-canvas {
@@ -89,6 +136,7 @@
             transition: all 0.3s ease;
             max-width: 100%;
             max-height: 100%;
+            display: block;
         }
         
         #game-canvas.indoor {
@@ -98,6 +146,10 @@
         
         #aim-overlay, #shotgun-preview {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 10;
         }
@@ -283,15 +335,6 @@
         .player-3 { color: #ffeb3b; }
         .player-4 { color: #e91e63; }
         
-        #controls-toggle {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            font-size: 14px;
-            background: #555;
-        }
-        
         .weapon-info {
             background: rgba(34, 34, 59, 0.9);
             padding: 10px;
@@ -344,7 +387,7 @@
         
         /* Mobile Controls Layout */
         #mobile-controls {
-            display: none;
+            display: block;
             position: fixed;
             bottom: 20px;
             left: 0;
@@ -623,187 +666,97 @@
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
         }
         
-        /* Mobile Styles */
-        @media (max-width: 1200px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-                height: 100vh;
-            }
-            
-            #burger-menu {
+        /* Responsive adjustments for landscape */
+        @media (orientation: portrait) {
+            #portrait-warning {
                 display: flex;
             }
             
-            #sidebar {
-                display: none; /* Hide sidebar on mobile */
-            }
-            
-            #game-info-panel {
-                display: block;
-            }
-            
-            #game-container {
-                padding: 10px;
-                flex: 1;
-                min-height: 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            
-            #game-canvas {
-                width: 100%;
-                height: auto;
-                aspect-ratio: 1 / 1;
-                max-width: min(100vh - 200px, 100vw - 20px);
-                max-height: min(100vh - 200px, 100vw - 20px);
-            }
-            
+            #burger-menu,
+            #game-container,
             #mobile-controls {
-                display: block;
-            }
-            
-            #aim-overlay, #shotgun-preview {
-                width: 100% !important;
-                height: 100% !important;
-            }
-            
-            .aim-cell, .shotgun-cell {
-                width: calc(100% / 15) !important;
-                height: calc(100% / 15) !important;
-            }
-            
-            .turn-indicator {
-                top: 10px;
-                font-size: 16px;
-                padding: 8px 16px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-            }
-            
-            .weapon-list, .gear-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .rule-list {
-                padding-left: 15px;
-            }
-            
-            .rule-list li {
-                margin: 8px 0;
+                display: none !important;
             }
         }
         
-        @media (max-width: 768px) {
+        @media (orientation: landscape) {
+            #portrait-warning {
+                display: none;
+            }
+            
             #game-canvas {
-                max-width: 95vw;
-                max-height: 95vw;
+                max-width: 80vh;
+                max-height: 80vh;
             }
             
-            .directional-pad {
+            .mobile-controls-group {
+                padding: 0 10px;
+            }
+            
+            .directional-pad, .action-buttons {
                 width: 160px;
-                height: 160px;
-            }
-            
-            .action-buttons {
-                width: 180px;
             }
             
             .mobile-btn {
-                width: 65px;
-                height: 65px;
+                width: 60px;
+                height: 60px;
                 font-size: 24px;
             }
             
             .dice-display {
+                top: -60px;
                 font-size: 20px;
                 padding: 12px 24px;
-                top: -60px;
-            }
-            
-            .player-info, .controls, #game-status {
-                padding: 12px;
-            }
-            
-            button {
-                padding: 10px;
-                font-size: 14px;
-            }
-            
-            .stats-grid {
-                font-size: 12px;
-                gap: 8px;
             }
         }
         
-        @media (max-height: 700px) {
-            #game-canvas {
-                max-width: 70vh;
-                max-height: 70vh;
-            }
-            
-            .directional-pad {
-                width: 140px;
-                height: 140px;
-            }
-            
-            .action-buttons {
-                width: 160px;
-            }
-            
-            .mobile-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
-            }
-            
-            .dice-display {
-                top: -50px;
-                padding: 10px 20px;
-                font-size: 18px;
-            }
-        }
-        
-        /* Landscape optimization */
-        @media (orientation: landscape) and (max-height: 600px) {
+        @media (min-width: 1200px) {
+            /* Desktop styles */
             body {
                 flex-direction: row;
             }
             
             #sidebar {
-                display: flex; /* Show sidebar in landscape on mobile */
-                width: 280px;
-                height: 100vh;
-                overflow-y: auto;
+                display: flex;
+                width: 300px;
+                background: rgba(42, 42, 66, 0.9);
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
                 border-right: 2px solid #4cc9f0;
-                border-bottom: none;
+                backdrop-filter: blur(10px);
             }
             
             #burger-menu {
-                display: none; /* Hide burger in landscape */
+                display: none;
             }
             
             #mobile-controls {
-                display: none; /* Hide mobile controls in landscape */
+                display: none;
             }
             
             #game-container {
-                height: 100vh;
+                padding: 40px;
             }
             
             #game-canvas {
-                max-width: 90vh;
-                max-height: 90vh;
+                max-width: 720px;
+                max-height: 720px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Portrait Warning -->
+    <div id="portrait-warning">
+        <div class="warning-content">
+            <h2>🔄 Please Rotate Your Device</h2>
+            <div class="rotate-icon">↔️</div>
+            <p>This game works best in landscape mode. Please rotate your device to continue playing.</p>
+            <p><strong>Tip:</strong> Turn off auto-rotate and keep your device in landscape position for the best experience.</p>
+        </div>
+    </div>
+
     <!-- Burger Menu -->
     <div id="burger-menu" onclick="toggleGameInfo()">☰</div>
     
@@ -1197,6 +1150,9 @@
                     steps: 0
                 };
                 
+                // Store canvas position for aiming calculations
+                this.canvasRect = null;
+                
                 // Initialize audio first
                 this.initAudio();
                 
@@ -1205,6 +1161,38 @@
                 
                 // Setup mobile button states
                 this.setupMobileButtons();
+                
+                // Check orientation on load
+                this.checkOrientation();
+                
+                // Listen for orientation changes
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => this.checkOrientation(), 100);
+                });
+                
+                // Listen for resize to update canvas position
+                window.addEventListener('resize', () => {
+                    this.updateCanvasPosition();
+                });
+            }
+            
+            checkOrientation() {
+                const isPortrait = window.innerHeight > window.innerWidth;
+                const warning = document.getElementById('portrait-warning');
+                
+                if (isPortrait) {
+                    warning.style.display = 'flex';
+                } else {
+                    warning.style.display = 'none';
+                    this.updateCanvasPosition();
+                }
+            }
+            
+            updateCanvasPosition() {
+                // Get the current canvas position for accurate aiming
+                if (this.canvas) {
+                    this.canvasRect = this.canvas.getBoundingClientRect();
+                }
             }
             
             startGame() {
@@ -1215,7 +1203,6 @@
                 this.initWeapons();
                 this.initGear();
                 this.initUI();
-                this.checkMobile();
                 this.draw();
                 
                 // Set initial turn
@@ -1294,11 +1281,8 @@
                 this.aimOverlay = document.getElementById('aim-overlay');
                 this.shotgunPreview = document.getElementById('shotgun-preview');
                 
-                // Set overlay dimensions to match canvas
-                this.aimOverlay.style.width = this.canvas.width + 'px';
-                this.aimOverlay.style.height = this.canvas.height + 'px';
-                this.shotgunPreview.style.width = this.canvas.width + 'px';
-                this.shotgunPreview.style.height = this.canvas.height + 'px';
+                // Update canvas position
+                this.updateCanvasPosition();
                 
                 // Focus canvas for keyboard controls
                 this.canvas.addEventListener('click', () => {
@@ -1652,25 +1636,6 @@
                 this.updateUI();
                 this.updateWeaponInfo();
                 this.updateControlStatus();
-            }
-            
-            checkMobile() {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (isMobile) {
-                    document.getElementById('mobile-controls').style.display = 'block';
-                    // Force landscape on mobile
-                    this.forceLandscape();
-                }
-            }
-            
-            forceLandscape() {
-                if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
-                    try {
-                        window.screen.orientation.lock('landscape');
-                    } catch (e) {
-                        console.log('Could not lock orientation');
-                    }
-                }
             }
             
             setupMobileButtons() {
@@ -2321,6 +2286,7 @@
                 const player = this.players[this.currentPlayer];
                 this.aiming = true;
                 
+                // FIXED: Always start aim at player's current position
                 if (this.isIndoor && player.indoorPos) {
                     this.aim = {
                         x: player.indoorPos.x,
@@ -2414,11 +2380,7 @@
                     tileSize = this.TILE_SIZE;
                 }
                 
-                // Ensure the cursor stays within canvas bounds
-                const canvasRect = this.canvas.getBoundingClientRect();
-                const canvasX = parseInt(this.canvas.style.left || 0);
-                const canvasY = parseInt(this.canvas.style.top || 0);
-                
+                // FIXED: Ensure cursor stays within canvas bounds
                 // Create new cursor
                 const cursor = document.createElement('div');
                 cursor.className = 'aim-cell';
@@ -3103,13 +3065,6 @@
             if (window.innerWidth <= 1200) {
                 e.preventDefault();
             }
-        });
-        
-        // Handle orientation change
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                location.reload();
-            }, 500);
         });
     </script>
 </body>
