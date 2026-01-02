@@ -24,11 +24,12 @@
             display: flex;
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
         }
         
         #sidebar {
             width: 300px;
-            background: rgba(42, 42, 66, 0.95);
+            background: rgba(42, 42, 66, 0.9);
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -36,7 +37,7 @@
             border-right: 2px solid #4cc9f0;
             backdrop-filter: blur(10px);
             overflow-y: auto;
-            max-height: 100vh;
+            flex-shrink: 0;
         }
         
         #game-container {
@@ -57,8 +58,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
             display: block;
-            max-width: calc(100vh - 20px);
-            max-height: calc(100vh - 20px);
         }
         
         #game-canvas.indoor {
@@ -352,7 +351,6 @@
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.5s ease;
-            padding: 20px;
         }
         
         .modal-content {
@@ -360,7 +358,7 @@
             padding: 30px;
             border-radius: 15px;
             max-width: 600px;
-            width: 100%;
+            width: 90%;
             max-height: 80vh;
             overflow-y: auto;
             border: 3px solid #4cc9f0;
@@ -462,14 +460,14 @@
             display: block;
         }
         
-        /* Dice roll display for mobile */
+        /* Dice roll display for mobile - moved to bottom */
         #dice-roll-display {
             position: absolute;
-            bottom: 200px;
+            bottom: 220px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 20px;
             font-weight: bold;
@@ -479,10 +477,9 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             display: none;
             animation: slideIn 0.5s ease;
-            white-space: nowrap;
         }
         
-        /* Mobile control buttons - FIXED ALIGNMENT */
+        /* Mobile control buttons */
         .mobile-control-btn {
             width: 60px;
             height: 60px;
@@ -531,7 +528,7 @@
             background: linear-gradient(135deg, #ff5722, #e64a19);
         }
         
-        /* Mobile arrow controls (Nintendo-style) - FIXED ALIGNMENT */
+        /* Mobile arrow controls (Nintendo-style) */
         .mobile-arrow-controls {
             position: absolute;
             left: 20px;
@@ -599,7 +596,6 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(76, 201, 240, 0.3);
             display: none;
-            z-index: 50;
         }
         
         .mobile-info-compact {
@@ -634,16 +630,28 @@
             border-radius: 4px;
         }
         
-        /* Action buttons layout - FIXED ALIGNMENT */
+        #mobile-menu-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.3);
+            border: 2px solid #4cc9f0;
+            color: white;
+            font-size: 24px;
+            z-index: 1001;
+            display: none;
+        }
+        
+        /* Action buttons layout (like arrows) */
         .mobile-action-controls {
             position: absolute;
             right: 20px;
             bottom: 20px;
             width: 160px;
             height: 160px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         
         .mobile-action-btn {
@@ -661,7 +669,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: all 0.2s;
             cursor: pointer;
-            z-index: 60;
         }
         
         .mobile-action-btn:active {
@@ -719,22 +726,6 @@
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
-            z-index: 60;
-        }
-        
-        #mobile-menu-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(76, 201, 240, 0.3);
-            border: 2px solid #4cc9f0;
-            color: white;
-            font-size: 24px;
-            z-index: 1001;
-            display: none;
         }
         
         .mobile-info-expanded {
@@ -775,7 +766,7 @@
             background: rgba(0,0,0,0.95);
             z-index: 9999;
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             text-align: center;
             padding: 20px;
             align-items: center;
@@ -785,22 +776,13 @@
         @media (max-width: 1200px) {
             body {
                 flex-direction: column;
-                height: 100vh;
-                overflow: hidden;
             }
             
             #sidebar {
                 width: 100%;
                 height: auto;
-                max-height: 40vh;
                 border-right: none;
                 border-bottom: 2px solid #4cc9f0;
-                flex-shrink: 0;
-            }
-            
-            #game-container {
-                height: 60vh;
-                min-height: 60vh;
             }
         }
         
@@ -816,10 +798,8 @@
             
             body {
                 flex-direction: column;
-                height: 100vh;
-                width: 100vw;
-                overflow: hidden;
-                position: fixed;
+                min-height: 100vh;
+                overflow: auto;
             }
             
             #sidebar {
@@ -827,17 +807,18 @@
             }
             
             #game-container {
+                padding: 0;
                 width: 100vw;
                 height: 100vh;
-                padding: 10px;
                 display: flex;
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
             }
             
             #game-canvas {
-                width: 95vmin;
-                height: 95vmin;
+                width: 95vmin !important;
+                height: 95vmin !important;
                 max-width: 95vmin;
                 max-height: 95vmin;
                 border-width: 3px;
@@ -848,8 +829,8 @@
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100vw;
-                height: 100vh;
+                right: 0;
+                bottom: 0;
                 pointer-events: none;
                 z-index: 100;
             }
@@ -875,36 +856,17 @@
                 top: 10px;
                 font-size: 16px;
                 padding: 8px 16px;
-                white-space: nowrap;
-                max-width: 90vw;
-                text-align: center;
             }
             
             #dice-roll-display {
-                bottom: 180px;
+                bottom: 220px;
                 font-size: 18px;
-                padding: 8px 16px;
+                padding: 6px 12px;
             }
             
             .house-indicator,
             .exit-instruction {
                 display: none !important;
-            }
-            
-            /* FIXED: Adjust button positions for better alignment */
-            .mobile-arrow-controls {
-                left: 15px;
-                bottom: 15px;
-            }
-            
-            .mobile-action-controls {
-                right: 15px;
-                bottom: 15px;
-            }
-            
-            #mobile-reset-game {
-                bottom: 200px;
-                right: 15px;
             }
             
             /* Show landscape warning only in portrait mode */
@@ -918,49 +880,6 @@
                 #mobile-info-panel {
                     display: none;
                 }
-            }
-        }
-        
-        /* Small mobile devices */
-        @media (max-width: 480px) {
-            .turn-indicator {
-                font-size: 14px;
-                padding: 6px 12px;
-            }
-            
-            #dice-roll-display {
-                bottom: 160px;
-                font-size: 16px;
-                padding: 6px 12px;
-            }
-            
-            .mobile-arrow-controls {
-                left: 10px;
-                bottom: 10px;
-                width: 140px;
-                height: 140px;
-            }
-            
-            .mobile-action-controls {
-                right: 10px;
-                bottom: 10px;
-                width: 140px;
-                height: 140px;
-            }
-            
-            .mobile-arrow-btn,
-            .mobile-action-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            
-            #mobile-reset-game {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-                bottom: 180px;
-                right: 10px;
             }
         }
     </style>
@@ -1310,7 +1229,7 @@
                 const containerWidth = container.clientWidth;
                 const containerHeight = container.clientHeight;
                 
-                // Use 90% of the smaller dimension to ensure it fits
+                // Use vmin units to make it responsive while maintaining square aspect
                 const size = Math.min(containerWidth, containerHeight) * 0.85;
                 
                 console.log("Updating canvas size:", { containerWidth, containerHeight, size });
