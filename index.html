@@ -666,6 +666,109 @@
             box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
         }
         
+        /* NEW: Mobile Aiming Controls */
+        #mobile-aim-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #mobile-aim-controls.active {
+            display: block;
+        }
+
+        .aim-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 8px;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+            pointer-events: auto;
+        }
+
+        .aim-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(67, 97, 238, 0.8);
+            color: white;
+            user-select: none;
+            transition: all 0.1s;
+            margin: 0;
+            padding: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .aim-btn:active {
+            transform: scale(0.9);
+            background: rgba(42, 66, 220, 0.9);
+        }
+
+        .aim-center {
+            grid-column: 3;
+            grid-row: 3;
+            background: rgba(255, 152, 0, 0.9);
+            font-size: 32px;
+        }
+
+        .aim-confirm {
+            grid-column: 2 / span 3;
+            grid-row: 5;
+            background: linear-gradient(135deg, #f72585, #b5179e);
+            font-size: 20px;
+            border-radius: 15px;
+        }
+
+        .aim-cancel {
+            grid-column: 2 / span 3;
+            grid-row: 1;
+            background: rgba(100, 100, 100, 0.8);
+            font-size: 20px;
+            border-radius: 15px;
+        }
+
+        .aim-line {
+            position: absolute;
+            background: rgba(255, 235, 59, 0.3);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        /* Mobile Aim Instruction */
+        #aim-instruction {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: #4cc9f0;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #4cc9f0;
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+        }
+
+        #aim-instruction.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
         /* Responsive adjustments for landscape */
         @media (orientation: portrait) {
             #portrait-warning {
@@ -708,6 +811,17 @@
                 font-size: 20px;
                 padding: 12px 24px;
             }
+            
+            .aim-controls-grid {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .aim-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
         }
         
         @media (min-width: 1200px) {
@@ -733,6 +847,10 @@
             
             #mobile-controls {
                 display: none;
+            }
+            
+            #mobile-aim-controls {
+                display: none !important;
             }
             
             #game-container {
@@ -1011,7 +1129,7 @@
                     <button class="mobile-btn" onclick="game.movePlayer(0, -1)" ontouchstart="event.preventDefault(); game.movePlayer(0, -1)">↑</button>
                     <div></div>
                     <button class="mobile-btn" onclick="game.movePlayer(-1, 0)" ontouchstart="event.preventDefault(); game.movePlayer(-1, 0)">←</button>
-                    <button class="mobile-btn center-btn" onclick="game.enterAim()" ontouchstart="event.preventDefault(); game.enterAim()">🎯</button>
+                    <button class="mobile-btn center-btn" onclick="game.enterAimMobile()" ontouchstart="event.preventDefault(); game.enterAimMobile()">🎯</button>
                     <button class="mobile-btn" onclick="game.movePlayer(1, 0)" ontouchstart="event.preventDefault(); game.movePlayer(1, 0)">→</button>
                     <div></div>
                     <button class="mobile-btn" onclick="game.movePlayer(0, 1)" ontouchstart="event.preventDefault(); game.movePlayer(0, 1)">↓</button>
@@ -1024,6 +1142,31 @@
                     <button class="mobile-btn" id="mobile-end-turn" onclick="game.endTurn()" ontouchstart="event.preventDefault(); game.endTurn()">⏭️</button>
                     <button class="mobile-btn reset" id="mobile-reset" onclick="game.resetGame()" ontouchstart="event.preventDefault(); game.resetGame()">🔄</button>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Aim Controls -->
+        <div id="mobile-aim-controls">
+            <div id="aim-instruction">Use directional buttons to aim. Confirm when ready.</div>
+            <div class="aim-controls-grid">
+                <div></div>
+                <button class="aim-btn aim-up" onclick="game.moveAimMobile(0, -1)" ontouchstart="event.preventDefault(); game.moveAimMobile(0, -1)">↑</button>
+                <div></div>
+                <div></div>
+                
+                <button class="aim-btn aim-left" onclick="game.moveAimMobile(-1, 0)" ontouchstart="event.preventDefault(); game.moveAimMobile(-1, 0)">←</button>
+                <button class="aim-btn aim-center" onclick="game.resetAimMobile()" ontouchstart="event.preventDefault(); game.resetAimMobile()">📍</button>
+                <button class="aim-btn aim-right" onclick="game.moveAimMobile(1, 0)" ontouchstart="event.preventDefault(); game.moveAimMobile(1, 0)">→</button>
+                <div></div>
+                
+                <div></div>
+                <button class="aim-btn aim-down" onclick="game.moveAimMobile(0, 1)" ontouchstart="event.preventDefault(); game.moveAimMobile(0, 1)">↓</button>
+                <div></div>
+                <div></div>
+                
+                <button class="aim-btn aim-cancel" onclick="game.cancelAimMobile()" ontouchstart="event.preventDefault(); game.cancelAimMobile()">✗ Cancel</button>
+                <div></div>
+                <button class="aim-btn aim-confirm" onclick="game.confirmAimMobile()" ontouchstart="event.preventDefault(); game.confirmAimMobile()">🎯 Confirm Aim</button>
             </div>
         </div>
     </div>
@@ -1106,7 +1249,7 @@
                     }
                 } else {
                     modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                    statusEl.textContent = 'Use directional pad to aim, then tap "Shoot"';
+                    statusEl.textContent = 'Use directional buttons to aim, then confirm';
                 }
             }
         }
@@ -1140,14 +1283,18 @@
                 this.currentHouse = null;
                 this.viewingHouse = null;
                 
-                // Aim state
+                // Enhanced Aim state for mobile
                 this.aiming = false;
                 this.aim = {
                     x: null,
                     y: null,
                     dx: null,
                     dy: null,
-                    steps: 0
+                    steps: 0,
+                    path: [], // Store the entire aim path
+                    target: null, // Store potential target
+                    startX: null,
+                    startY: null
                 };
                 
                 // Store canvas position for aiming calculations
@@ -1649,8 +1796,8 @@
                     const resetBtn = document.getElementById('mobile-reset');
                     
                     if (rollBtn) {
-                        rollBtn.disabled = this.hasRolled || this.isIndoor;
-                        if (!this.hasRolled && !this.isIndoor && this.gameActive) {
+                        rollBtn.disabled = this.hasRolled || this.isIndoor || this.aiming;
+                        if (!this.hasRolled && !this.isIndoor && !this.aiming && this.gameActive) {
                             rollBtn.classList.add('roll-dice-highlight');
                         } else {
                             rollBtn.classList.remove('roll-dice-highlight');
@@ -1763,7 +1910,9 @@
                         }
                     } else {
                         if (modeEl) modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                        if (statusEl) statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
+                        if (statusEl) statusEl.textContent = window.innerWidth <= 1200 ? 
+                            'Use directional buttons to aim, then confirm' :
+                            'Use arrow keys or WASD to aim, then click "Shoot"';
                     }
                 }
                 
@@ -1864,7 +2013,7 @@
             }
             
             rollDice() {
-                if (this.hasRolled || this.isIndoor) return;
+                if (this.hasRolled || this.isIndoor || this.aiming) return;
                 
                 const dice1 = Math.floor(Math.random() * 6) + 1;
                 const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -2293,7 +2442,11 @@
                         y: player.indoorPos.y,
                         dx: null,
                         dy: null,
-                        steps: 0
+                        steps: 0,
+                        path: [[player.indoorPos.x, player.indoorPos.y]],
+                        target: null,
+                        startX: player.indoorPos.x,
+                        startY: player.indoorPos.y
                     };
                 } else {
                     this.aim = {
@@ -2301,17 +2454,363 @@
                         y: player.y,
                         dx: null,
                         dy: null,
-                        steps: 0
+                        steps: 0,
+                        path: [[player.x, player.y]],
+                        target: null,
+                        startX: player.x,
+                        startY: player.y
                     };
                 }
                 
-                this.updateAimCursor();
+                // If on mobile, use mobile aim interface
+                if (window.innerWidth <= 1200) {
+                    this.enterAimMobile();
+                } else {
+                    this.updateAimCursor();
+                    this.playSound(600);
+                    this.updateUI();
+                }
+            }
+            
+            // NEW: Mobile Aim System Methods
+            enterAimMobile() {
+                if (this.hasShot || this.aiming) return;
+                
+                const player = this.players[this.currentPlayer];
+                this.aiming = true;
+                
+                // Set starting position
+                if (this.isIndoor && player.indoorPos) {
+                    this.aim.x = player.indoorPos.x;
+                    this.aim.y = player.indoorPos.y;
+                    this.aim.startX = player.indoorPos.x;
+                    this.aim.startY = player.indoorPos.y;
+                } else {
+                    this.aim.x = player.x;
+                    this.aim.y = player.y;
+                    this.aim.startX = player.x;
+                    this.aim.startY = player.y;
+                }
+                
+                // Reset aim state
+                this.aim.dx = null;
+                this.aim.dy = null;
+                this.aim.steps = 0;
+                this.aim.path = [[this.aim.x, this.aim.y]];
+                this.aim.target = null;
+                
+                // Setup mobile aim interface
+                this.setupMobileAimInterface();
+                
                 this.playSound(600);
                 this.updateUI();
+                this.updateAimDisplay();
+            }
+            
+            setupMobileAimInterface() {
+                // Show mobile aim controls
+                document.getElementById('mobile-aim-controls').classList.add('active');
+                document.getElementById('aim-instruction').classList.add('active');
+                document.getElementById('mobile-controls').style.display = 'none';
+                
+                // Update instruction text
+                const player = this.players[this.currentPlayer];
+                const weapon = this.weapons[player.weapon];
+                let range = weapon.range;
+                player.gear.forEach(g => {
+                    if (g.effect === 'rangeBonus') range += g.value;
+                });
+                
+                document.getElementById('aim-instruction').innerHTML = 
+                    `AIM MODE<br>Weapon Range: ${range} tiles<br>Use buttons to aim`;
+            }
+            
+            moveAimMobile(dx, dy) {
+                if (!this.aiming || this.hasShot) return;
+                
+                const player = this.players[this.currentPlayer];
+                const weapon = this.weapons[player.weapon];
+                
+                // Apply scope bonus
+                let range = weapon.range;
+                player.gear.forEach(g => {
+                    if (g.effect === 'rangeBonus') range += g.value;
+                });
+                
+                // If direction not set, set it now
+                if (this.aim.dx === null && this.aim.dy === null) {
+                    this.aim.dx = dx;
+                    this.aim.dy = dy;
+                }
+                
+                // Check if we're moving in the set direction
+                if (dx !== this.aim.dx || dy !== this.aim.dy) {
+                    // Try to change direction - check if path is valid
+                    const newX = this.aim.x + dx;
+                    const newY = this.aim.y + dy;
+                    
+                    // Can't change direction if there's already a path in that direction
+                    const hasStep = this.aim.path.some(([px, py]) => px === newX && py === newY);
+                    if (hasStep) return;
+                    
+                    // Check range
+                    if (this.aim.steps >= range) return;
+                    
+                    // Can change direction - update
+                    this.aim.dx = dx;
+                    this.aim.dy = dy;
+                }
+                
+                // Check range
+                if (this.aim.steps >= range) {
+                    this.playSound(200, 0.1, 'square');
+                    return;
+                }
+                
+                const newX = this.aim.x + this.aim.dx;
+                const newY = this.aim.y + this.aim.dy;
+                
+                // Check bounds
+                let maxX, maxY;
+                if (this.isIndoor) {
+                    maxX = maxY = 8;
+                } else {
+                    maxX = maxY = this.GRID_SIZE;
+                }
+                
+                if (newX < 0 || newY < 0 || newX >= maxX || newY >= maxY) {
+                    this.playSound(200, 0.1, 'square');
+                    return;
+                }
+                
+                // Update aim position
+                this.aim.x = newX;
+                this.aim.y = newY;
+                this.aim.steps++;
+                this.aim.path.push([newX, newY]);
+                
+                // Check for target
+                this.aim.target = this.findTargetAt(player, newX, newY);
+                
+                this.updateAimDisplay();
+                this.playSound(400 + (this.aim.steps * 50));
+            }
+            
+            resetAimMobile() {
+                if (!this.aiming || this.hasShot) return;
+                
+                // Reset to starting position
+                this.aim.x = this.aim.startX;
+                this.aim.y = this.aim.startY;
+                this.aim.dx = null;
+                this.aim.dy = null;
+                this.aim.steps = 0;
+                this.aim.path = [[this.aim.x, this.aim.y]];
+                this.aim.target = null;
+                
+                this.updateAimDisplay();
+                this.playSound(300);
+            }
+            
+            cancelAimMobile() {
+                this.exitAimMode();
+                this.playSound(200);
+            }
+            
+            confirmAimMobile() {
+                if (!this.aiming || this.hasShot) return;
+                
+                // Check if we have a valid target
+                const player = this.players[this.currentPlayer];
+                const target = this.aim.target;
+                
+                if (target) {
+                    // Check line of sight
+                    if (this.checkLineOfSight(player, target)) {
+                        // Shoot at target
+                        this.executeAimedShot();
+                    } else {
+                        alert('Shot blocked by cover!');
+                        this.playSound(200, 0.1, 'square');
+                        return;
+                    }
+                } else {
+                    alert('No target in aim path!');
+                    this.playSound(200, 0.1, 'square');
+                    return;
+                }
+            }
+            
+            executeAimedShot() {
+                const shooter = this.players[this.currentPlayer];
+                const weapon = this.weapons[shooter.weapon];
+                const target = this.aim.target;
+                
+                // Calculate damage based on weapon type
+                if (weapon.type === 'shotgun') {
+                    this.fireShotgun(shooter, weapon);
+                } else if (weapon.type === 'rapid') {
+                    this.fireRapid(shooter, weapon);
+                } else if (weapon.type === 'flame') {
+                    this.fireFlamethrower(shooter, weapon);
+                } else {
+                    // Linear weapons - single shot at target
+                    this.applyDamage(shooter, target, weapon.damage);
+                }
+                
+                // Reset aim state
+                this.exitAimMode();
+                this.hasShot = true;
+                
+                // Update UI and redraw
+                this.updateUI();
+                if (this.isIndoor) {
+                    this.drawIndoor();
+                } else {
+                    this.draw();
+                }
+            }
+            
+            updateAimDisplay() {
+                // Clear previous display
+                this.aimOverlay.innerHTML = '';
+                
+                if (!this.aiming) return;
+                
+                const player = this.players[this.currentPlayer];
+                const weapon = this.weapons[player.weapon];
+                
+                // Draw aim path
+                for (let i = 0; i < this.aim.path.length - 1; i++) {
+                    const [x1, y1] = this.aim.path[i];
+                    const [x2, y2] = this.aim.path[i + 1];
+                    
+                    this.drawAimLine(x1, y1, x2, y2);
+                }
+                
+                // Draw aim cells
+                this.aim.path.forEach(([x, y], index) => {
+                    const isCurrent = index === this.aim.path.length - 1;
+                    const hasTarget = isCurrent && this.aim.target;
+                    
+                    this.drawAimCell(x, y, isCurrent, hasTarget);
+                });
+                
+                // Update instruction text with current info
+                const instruction = document.getElementById('aim-instruction');
+                const range = weapon.range + (player.gear.filter(g => g.effect === 'rangeBonus').reduce((sum, g) => sum + g.value, 0));
+                
+                let text = `AIM MODE | Range: ${range} | Steps: ${this.aim.steps}/${range}<br>`;
+                
+                if (this.aim.target) {
+                    const targetIndex = this.players.indexOf(this.aim.target);
+                    text += `<span style="color: #ff5722">Target: Player ${targetIndex + 1} (${this.aim.target.hp} HP)</span>`;
+                } else {
+                    text += 'Move aim to target a player';
+                }
+                
+                instruction.innerHTML = text;
+            }
+            
+            drawAimLine(x1, y1, x2, y2) {
+                let posX1, posY1, posX2, posY2;
+                
+                if (this.isIndoor) {
+                    const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    
+                    posX1 = x1 * this.TILE_SIZE + indoorOffsetX + this.TILE_SIZE / 2;
+                    posY1 = y1 * this.TILE_SIZE + indoorOffsetY + this.TILE_SIZE / 2;
+                    posX2 = x2 * this.TILE_SIZE + indoorOffsetX + this.TILE_SIZE / 2;
+                    posY2 = y2 * this.TILE_SIZE + indoorOffsetY + this.TILE_SIZE / 2;
+                } else {
+                    posX1 = x1 * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    posY1 = y1 * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    posX2 = x2 * this.TILE_SIZE + this.TILE_SIZE / 2;
+                    posY2 = y2 * this.TILE_SIZE + this.TILE_SIZE / 2;
+                }
+                
+                const line = document.createElement('div');
+                line.className = 'aim-line';
+                
+                // Calculate line dimensions and position
+                const dx = posX2 - posX1;
+                const dy = posY2 - posY1;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.height = '4px';
+                line.style.left = posX1 + 'px';
+                line.style.top = (posY1 - 2) + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 0';
+                
+                this.aimOverlay.appendChild(line);
+            }
+            
+            drawAimCell(x, y, isCurrent, hasTarget) {
+                let posX, posY;
+                
+                if (this.isIndoor) {
+                    const indoorOffsetX = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    const indoorOffsetY = (this.GRID_SIZE - 8) * this.TILE_SIZE / 2;
+                    posX = x * this.TILE_SIZE + indoorOffsetX;
+                    posY = y * this.TILE_SIZE + indoorOffsetY;
+                } else {
+                    posX = x * this.TILE_SIZE;
+                    posY = y * this.TILE_SIZE;
+                }
+                
+                const cell = document.createElement('div');
+                cell.className = 'aim-cell';
+                
+                if (hasTarget) {
+                    cell.style.borderColor = '#ff5722';
+                    cell.style.backgroundColor = 'rgba(255, 87, 34, 0.3)';
+                } else if (isCurrent) {
+                    cell.style.borderWidth = '4px';
+                    cell.style.backgroundColor = 'rgba(255, 235, 59, 0.3)';
+                } else {
+                    cell.style.opacity = '0.5';
+                    cell.style.backgroundColor = 'rgba(255, 235, 59, 0.1)';
+                }
+                
+                cell.style.left = posX + 'px';
+                cell.style.top = posY + 'px';
+                cell.style.width = this.TILE_SIZE + 'px';
+                cell.style.height = this.TILE_SIZE + 'px';
+                
+                this.aimOverlay.appendChild(cell);
+            }
+            
+            exitAimMode() {
+                this.aiming = false;
+                this.aimOverlay.innerHTML = '';
+                
+                // Hide mobile aim interface if active
+                if (window.innerWidth <= 1200) {
+                    document.getElementById('mobile-aim-controls').classList.remove('active');
+                    document.getElementById('aim-instruction').classList.remove('active');
+                    document.getElementById('mobile-controls').style.display = 'block';
+                }
+                
+                // Reset aim state
+                this.aim = {
+                    x: null,
+                    y: null,
+                    dx: null,
+                    dy: null,
+                    steps: 0,
+                    path: [],
+                    target: null,
+                    startX: null,
+                    startY: null
+                };
             }
             
             moveAim(dx, dy) {
-                if (!this.aiming) return;
+                if (!this.aiming || window.innerWidth <= 1200) return;
                 
                 const player = this.players[this.currentPlayer];
                 const weapon = this.weapons[player.weapon];
@@ -2353,6 +2852,10 @@
                 this.aim.x = newX;
                 this.aim.y = newY;
                 this.aim.steps++;
+                this.aim.path.push([newX, newY]);
+                
+                // Check for target
+                this.aim.target = this.findTargetAt(player, newX, newY);
                 
                 this.updateAimCursor();
                 this.updateShotgunPreview();
@@ -2363,7 +2866,7 @@
                 // Clear previous cursor
                 this.aimOverlay.innerHTML = '';
                 
-                if (!this.aiming) return;
+                if (!this.aiming || window.innerWidth <= 1200) return;
                 
                 // Calculate position based on indoor/outdoor
                 let x, y, tileSize;
@@ -2380,7 +2883,6 @@
                     tileSize = this.TILE_SIZE;
                 }
                 
-                // FIXED: Ensure cursor stays within canvas bounds
                 // Create new cursor
                 const cursor = document.createElement('div');
                 cursor.className = 'aim-cell';
@@ -2456,32 +2958,36 @@
             }
             
             shoot() {
-                if (!this.aiming || this.hasShot) return;
-                
-                const shooter = this.players[this.currentPlayer];
-                const weapon = this.weapons[shooter.weapon];
-                
-                if (weapon.type === 'shotgun') {
-                    this.fireShotgun(shooter, weapon);
-                } else if (weapon.type === 'rapid') {
-                    this.fireRapid(shooter, weapon);
-                } else if (weapon.type === 'flame') {
-                    this.fireFlamethrower(shooter, weapon);
+                // Use mobile aim system when in mobile view
+                if (window.innerWidth <= 1200 && this.aiming) {
+                    this.confirmAimMobile();
                 } else {
-                    this.fireLinear(shooter, weapon);
-                }
-                
-                // Reset aim state
-                this.hasShot = true;
-                this.aiming = false;
-                this.aimOverlay.innerHTML = '';
-                this.shotgunPreview.innerHTML = '';
-                
-                this.updateUI();
-                if (this.isIndoor) {
-                    this.drawIndoor();
-                } else {
-                    this.draw();
+                    // Fallback to original method for desktop
+                    if (!this.aiming || this.hasShot) return;
+                    
+                    const shooter = this.players[this.currentPlayer];
+                    const weapon = this.weapons[shooter.weapon];
+                    
+                    if (weapon.type === 'shotgun') {
+                        this.fireShotgun(shooter, weapon);
+                    } else if (weapon.type === 'rapid') {
+                        this.fireRapid(shooter, weapon);
+                    } else if (weapon.type === 'flame') {
+                        this.fireFlamethrower(shooter, weapon);
+                    } else {
+                        this.fireLinear(shooter, weapon);
+                    }
+                    
+                    // Reset aim state
+                    this.hasShot = true;
+                    this.exitAimMode();
+                    
+                    this.updateUI();
+                    if (this.isIndoor) {
+                        this.drawIndoor();
+                    } else {
+                        this.draw();
+                    }
                 }
             }
             
@@ -2688,6 +3194,11 @@
             endTurn() {
                 if (!confirm("Are you sure you want to end your turn?")) return;
                 
+                // Exit aim mode if active
+                if (this.aiming) {
+                    this.exitAimMode();
+                }
+                
                 // Properly reset all turn state
                 this.movesLeft = 0;
                 this.hasShot = false;
@@ -2698,7 +3209,11 @@
                     y: null,
                     dx: null,
                     dy: null,
-                    steps: 0
+                    steps: 0,
+                    path: [],
+                    target: null,
+                    startX: null,
+                    startY: null
                 };
                 this.aimOverlay.innerHTML = '';
                 this.shotgunPreview.innerHTML = '';
@@ -3047,6 +3562,11 @@
                         this.drawIndoor();
                     } else {
                         this.draw();
+                    }
+                    
+                    // Update aim display if active (for mobile)
+                    if (this.aiming && window.innerWidth <= 1200) {
+                        this.updateAimDisplay();
                     }
                 }
                 
