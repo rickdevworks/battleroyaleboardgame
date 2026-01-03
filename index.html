@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battle Royale Board Game</title>
     <style>
         * {
@@ -17,7 +17,6 @@
             display: flex;
             min-height: 100vh;
             overflow: hidden;
-            touch-action: manipulation;
         }
         
         #sidebar {
@@ -47,7 +46,6 @@
             border-radius: 8px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
-            touch-action: none;
         }
         
         #game-canvas.indoor {
@@ -67,14 +65,6 @@
             background: rgba(255, 235, 59, 0.1);
             box-sizing: border-box;
             animation: pulse 1s infinite;
-        }
-        
-        /* ADDED: Mobile-specific aiming cursor */
-        .aim-cell.mobile {
-            border: 4px solid #ffeb3b;
-            background: rgba(255, 235, 59, 0.3);
-            z-index: 1000;
-            box-shadow: 0 0 20px rgba(255, 235, 59, 0.5);
         }
         
         .shotgun-cell {
@@ -156,7 +146,6 @@
             justify-content: center;
             gap: 8px;
             font-weight: 600;
-            touch-action: manipulation;
         }
         
         button:hover {
@@ -288,132 +277,6 @@
         }
         
         #mobile-controls {
-            display: none;
-        }
-        
-        /* ADDED: Touch controls for aiming */
-        .touch-aim-controls {
-            position: absolute;
-            bottom: 150px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: center;
-            gap: 20px;
-            padding: 15px;
-            background: rgba(0,0,0,0.7);
-            border-radius: 15px;
-            margin: 0 20px;
-            z-index: 1000;
-        }
-        
-        .touch-aim-controls button {
-            padding: 20px;
-            font-size: 24px;
-            background: rgba(67, 97, 238, 0.9);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        
-        .touch-aim-controls button:active {
-            transform: scale(0.95);
-            background: rgba(67, 97, 238, 1);
-        }
-        
-        /* ADDED: Grid overlay for better aiming */
-        .grid-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 1;
-            display: none;
-        }
-        
-        .grid-line {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        /* ADDED: Mobile aim confirmation button */
-        #mobile-shoot-btn {
-            position: absolute;
-            bottom: 80px;
-            right: 20px;
-            padding: 20px 30px;
-            font-size: 18px;
-            background: linear-gradient(135deg, #f72585, #b5179e);
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(247, 37, 133, 0.4);
-        }
-        
-        #mobile-shoot-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* ADDED: Mobile-friendly aim instructions */
-        .aim-instructions {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.8);
-            color: #ffeb3b;
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid #ffeb3b;
-            font-size: 14px;
-            display: none;
-            z-index: 1000;
-            max-width: 200px;
-            backdrop-filter: blur(5px);
-        }
-        
-        /* ADDED: Canvas touch overlay for mobile tapping */
-        .canvas-touch-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            display: none;
-        }
-        
-        /* ADDED: Mobile tap indicator */
-        .tap-indicator {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 235, 59, 0.3);
-            border: 3px solid #ffeb3b;
-            transform: translate(-50%, -50%);
-            animation: tapPulse 0.5s ease-out;
-            pointer-events: none;
-            z-index: 999;
-        }
-        
-        @keyframes tapPulse {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-        }
-        
-        /* ADDED: Mobile detection indicator */
-        .mobile-indicator {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.7);
-            color: #4cc9f0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
             display: none;
         }
         
@@ -601,31 +464,6 @@
                 display: block;
             }
         }
-        
-        @media (max-width: 768px) {
-            #game-canvas {
-                width: 95vw !important;
-                height: 95vw !important;
-                max-width: 500px;
-                max-height: 500px;
-            }
-            
-            .touch-aim-controls {
-                display: flex;
-            }
-            
-            .aim-instructions {
-                display: block;
-            }
-            
-            #mobile-shoot-btn {
-                display: block;
-            }
-            
-            .mobile-indicator {
-                display: block;
-            }
-        }
     </style>
 </head>
 <body>
@@ -752,6 +590,7 @@
             </div>
             
             <div class="stats-grid">
+                <!-- CHANGED: Current player text now changes color -->
                 <div class="stat-label">Current Player:</div>
                 <div class="stat-value" id="current-player" style="color: #ff5252;">1</div>
                 
@@ -794,6 +633,7 @@
                 ⏭️ End Turn
             </button>
             
+            <!-- ADDED: Reset button in main controls -->
             <button id="reset-game" onclick="game.resetGame()" class="reset">
                 🔄 Reset Game
             </button>
@@ -814,30 +654,6 @@
         <canvas id="game-canvas" width="720" height="720"></canvas>
         <div id="aim-overlay"></div>
         <div id="shotgun-preview"></div>
-        
-        <!-- ADDED: Mobile aim controls -->
-        <div id="touch-aim-controls" class="touch-aim-controls">
-            <button onclick="game.moveAim(0, -1)">↑</button>
-            <button onclick="game.moveAim(-1, 0)">←</button>
-            <button onclick="game.moveAim(1, 0)">→</button>
-            <button onclick="game.moveAim(0, 1)">↓</button>
-        </div>
-        
-        <!-- ADDED: Mobile shoot button -->
-        <button id="mobile-shoot-btn" onclick="game.shoot()">🔥 SHOOT</button>
-        
-        <!-- ADDED: Aim instructions -->
-        <div id="aim-instructions" class="aim-instructions">
-            <strong>🎯 AIMING MODE</strong><br>
-            Use touch controls below<br>
-            or tap on grid to aim
-        </div>
-        
-        <!-- ADDED: Canvas touch overlay -->
-        <div id="canvas-touch-overlay" class="canvas-touch-overlay"></div>
-        
-        <!-- ADDED: Mobile indicator -->
-        <div class="mobile-indicator">📱 Mobile Mode</div>
         
         <div id="house-indicator" class="house-indicator">
             <strong>🏠 In House:</strong>
@@ -895,12 +711,6 @@
                     steps: 0
                 };
                 
-                // NEW: Mobile detection
-                this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                this.canvasRect = null;
-                this.touchStartX = null;
-                this.touchStartY = null;
-                
                 // Initialize audio first
                 this.initAudio();
                 
@@ -919,7 +729,7 @@
                 this.checkMobile();
                 this.draw();
                 
-                // Set initial turn
+                // Set initial turn - FIXED: Ensure proper initialization
                 this.currentPlayer = 0;
                 this.movesLeft = 0;
                 this.hasShot = false;
@@ -934,7 +744,7 @@
                 // Enable controls immediately
                 this.updateControlStatus();
                 
-                // Update UI to show correct initial state
+                // FIXED: Update UI to show correct initial state
                 this.updateUI();
             }
             
@@ -964,12 +774,6 @@
                 // Hide modals
                 document.getElementById('house-modal').style.display = 'none';
                 document.getElementById('rules-modal').style.display = 'none';
-                
-                // Hide mobile controls
-                if (this.isMobile) {
-                    document.getElementById('touch-aim-controls').style.display = 'none';
-                    document.getElementById('mobile-shoot-btn').style.display = 'none';
-                }
                 
                 // Reinitialize game components
                 this.initMap();
@@ -1007,9 +811,6 @@
                 this.shotgunPreview.style.width = this.canvas.width + 'px';
                 this.shotgunPreview.style.height = this.canvas.height + 'px';
                 
-                // Store canvas bounding rectangle for mobile calculations
-                this.updateCanvasRect();
-                
                 // Focus canvas for keyboard controls
                 this.canvas.addEventListener('click', () => {
                     this.canvas.focus();
@@ -1017,11 +818,6 @@
                         this.audioContext.resume();
                     }
                 });
-                
-                // FIXED: Mobile touch events for aiming
-                if (this.isMobile) {
-                    this.setupMobileTouchControls();
-                }
                 
                 // Keyboard controls - ALWAYS ENABLED
                 window.addEventListener('keydown', (e) => {
@@ -1043,166 +839,6 @@
                         this.movePlayer(...dir);
                     }
                 });
-                
-                // Update canvas rect on resize
-                window.addEventListener('resize', () => {
-                    this.updateCanvasRect();
-                });
-            }
-            
-            updateCanvasRect() {
-                this.canvasRect = this.canvas.getBoundingClientRect();
-            }
-            
-            setupMobileTouchControls() {
-                const canvasOverlay = document.getElementById('canvas-touch-overlay');
-                
-                // Show canvas overlay when aiming
-                this.canvas.addEventListener('click', (e) => {
-                    if (this.aiming && this.isMobile) {
-                        this.handleCanvasTap(e);
-                    }
-                });
-                
-                // Touch events for aiming
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    if (this.aiming && this.isMobile) {
-                        const touch = e.touches[0];
-                        this.touchStartX = touch.clientX;
-                        this.touchStartY = touch.clientY;
-                        this.handleCanvasTap(e);
-                    }
-                }, { passive: false });
-                
-                // Swipe for aiming direction
-                this.canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    if (this.aiming && this.isMobile && this.touchStartX !== null) {
-                        const touch = e.touches[0];
-                        const dx = touch.clientX - this.touchStartX;
-                        const dy = touch.clientY - this.touchStartY;
-                        
-                        // Determine swipe direction
-                        if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
-                            if (Math.abs(dx) > Math.abs(dy)) {
-                                this.moveAim(dx > 0 ? 1 : -1, 0);
-                            } else {
-                                this.moveAim(0, dy > 0 ? 1 : -1);
-                            }
-                            this.touchStartX = touch.clientX;
-                            this.touchStartY = touch.clientY;
-                        }
-                    }
-                }, { passive: false });
-                
-                this.canvas.addEventListener('touchend', (e) => {
-                    this.touchStartX = null;
-                    this.touchStartY = null;
-                });
-            }
-            
-            handleCanvasTap(e) {
-                if (!this.aiming || !this.canvasRect) return;
-                
-                let clientX, clientY;
-                
-                if (e.type === 'touchstart' || e.type === 'touchmove') {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-                
-                // Calculate grid position based on canvas position and scale
-                const scaleX = this.canvas.width / this.canvasRect.width;
-                const scaleY = this.canvas.height / this.canvasRect.height;
-                
-                const canvasX = (clientX - this.canvasRect.left) * scaleX;
-                const canvasY = (clientY - this.canvasRect.top) * scaleY;
-                
-                // Calculate grid coordinates
-                let gridX, gridY;
-                
-                if (this.isIndoor) {
-                    // For indoor map (centered)
-                    const indoorSize = 8;
-                    const indoorOffsetX = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
-                    const indoorOffsetY = (this.GRID_SIZE - indoorSize) * this.TILE_SIZE / 2;
-                    
-                    gridX = Math.floor((canvasX - indoorOffsetX) / this.TILE_SIZE);
-                    gridY = Math.floor((canvasY - indoorOffsetY) / this.TILE_SIZE);
-                    
-                    // Validate indoor bounds
-                    if (gridX < 0 || gridY < 0 || gridX >= indoorSize || gridY >= indoorSize) {
-                        return;
-                    }
-                } else {
-                    // For outdoor map
-                    gridX = Math.floor(canvasX / this.TILE_SIZE);
-                    gridY = Math.floor(canvasY / this.TILE_SIZE);
-                    
-                    // Validate outdoor bounds
-                    if (gridX < 0 || gridY < 0 || gridX >= this.GRID_SIZE || gridY >= this.GRID_SIZE) {
-                        return;
-                    }
-                }
-                
-                // Show tap indicator
-                this.showTapIndicator(clientX, clientY);
-                
-                // Calculate direction from current aim position
-                if (this.aim.x !== null && this.aim.y !== null) {
-                    const dx = Math.sign(gridX - this.aim.x);
-                    const dy = Math.sign(gridY - this.aim.y);
-                    
-                    if (dx !== 0 || dy !== 0) {
-                        // Set direction and move aim
-                        this.aim.dx = dx;
-                        this.aim.dy = dy;
-                        
-                        // Calculate distance to move
-                        const distanceX = Math.abs(gridX - this.aim.x);
-                        const distanceY = Math.abs(gridY - this.aim.y);
-                        const steps = Math.max(distanceX, distanceY);
-                        
-                        // Move aim step by step within range
-                        const player = this.players[this.currentPlayer];
-                        const weapon = this.weapons[player.weapon];
-                        let range = weapon.range;
-                        player.gear.forEach(g => {
-                            if (g.effect === 'rangeBonus') range += g.value;
-                        });
-                        
-                        for (let i = 0; i < Math.min(steps, range - this.aim.steps); i++) {
-                            this.moveAim(dx, dy);
-                        }
-                    } else {
-                        // Tap on current position - just update cursor
-                        this.aim.x = gridX;
-                        this.aim.y = gridY;
-                        this.updateAimCursor();
-                    }
-                } else {
-                    // First tap - set initial position
-                    this.aim.x = gridX;
-                    this.aim.y = gridY;
-                    this.updateAimCursor();
-                }
-            }
-            
-            showTapIndicator(x, y) {
-                const indicator = document.createElement('div');
-                indicator.className = 'tap-indicator';
-                indicator.style.left = x + 'px';
-                indicator.style.top = y + 'px';
-                
-                document.getElementById('game-container').appendChild(indicator);
-                
-                setTimeout(() => {
-                    indicator.remove();
-                }, 500);
             }
             
             initAudio() {
@@ -1255,7 +891,7 @@
                                 entranceY: y
                             });
                         } else if (r < 0.20) {
-                            // Item crates
+                            // CHANGED: Item crates (📦 instead of ⭐)
                             this.map[y][x] = { type: '📦', blocks: false, item: true };
                         } else {
                             this.map[y][x] = null;
@@ -1289,26 +925,28 @@
                     }
                 }
                 
-                // Define entrance/exit door position
+                // Define entrance/exit door position (centered on bottom wall)
                 const doorX = Math.floor(indoorSize / 2) - 1;
                 const doorY = indoorSize - 1;
                 
-                // Set door
+                // Set door (both entrance and exit)
                 indoorMap[doorY][doorX] = { type: '🚪', blocks: false, door: true };
                 
                 // Create walls around the perimeter
                 for (let y = 0; y < indoorSize; y++) {
                     for (let x = 0; x < indoorSize; x++) {
                         if (x === 0 || y === 0 || x === indoorSize-1 || y === indoorSize-1) {
+                            // Skip door position
                             if (x === doorX && y === doorY) {
                                 continue;
                             }
+                            // Walls
                             indoorMap[y][x] = { type: '🧱', blocks: true };
                         }
                     }
                 }
                 
-                // Define safe zone around door
+                // Define safe zone around door (no obstacles)
                 const safeZone = [
                     [doorX, doorY],
                     [doorX, doorY - 1],
@@ -1318,29 +956,36 @@
                     [doorX + 1, doorY]
                 ];
                 
-                // Furniture and items
+                // List of house furniture (blocking obstacles)
                 const furniture = ['🛋️', '📺', '🪑', '🛏️'];
+                // List of food items (healing items) - REDUCED from previous
                 const foodItems = ['🍎', '🍗', '🥤'];
                 
-                // Place obstacles and items
+                // Place obstacles and items in the interior
                 for (let y = 1; y < indoorSize - 1; y++) {
                     for (let x = 1; x < indoorSize - 1; x++) {
+                        // Skip if in safe zone
                         const isSafe = safeZone.some(([sx, sy]) => sx === x && sy === y);
                         if (isSafe) continue;
                         
+                        // Skip if this is door
                         if (x === doorX && y === doorY) continue;
                         
                         const r = Math.random();
                         
                         if (r < 0.25) {
+                            // Furniture obstacle (25% chance)
                             const furnitureType = furniture[Math.floor(Math.random() * furniture.length)];
                             indoorMap[y][x] = { type: furnitureType, blocks: true };
                         } else if (r < 0.28) {
+                            // Food item (3% chance, after 25% for furniture) - REDUCED
                             const foodType = foodItems[Math.floor(Math.random() * foodItems.length)];
                             indoorMap[y][x] = { type: foodType, blocks: false, food: true, healAmount: this.getFoodHealAmount(foodType) };
                         } else if (r < 0.33) {
+                            // Chest item (5% chance)
                             indoorMap[y][x] = { type: '📦', blocks: false, item: true };
                         }
+                        // Otherwise, empty space
                     }
                 }
                 
@@ -1498,28 +1143,10 @@
             }
             
             checkMobile() {
-                if (this.isMobile) {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
                     document.getElementById('mobile-controls').style.display = 'block';
-                    // Adjust canvas size for mobile
-                    this.adjustCanvasForMobile();
                 }
-            }
-            
-            adjustCanvasForMobile() {
-                // Adjust canvas size to fit mobile screen better
-                const container = document.getElementById('game-container');
-                const maxWidth = Math.min(window.innerWidth - 40, 500);
-                this.canvas.style.width = maxWidth + 'px';
-                this.canvas.style.height = maxWidth + 'px';
-                
-                // Update overlays
-                this.aimOverlay.style.width = maxWidth + 'px';
-                this.aimOverlay.style.height = maxWidth + 'px';
-                this.shotgunPreview.style.width = maxWidth + 'px';
-                this.shotgunPreview.style.height = maxWidth + 'px';
-                
-                // Update rect after resize
-                setTimeout(() => this.updateCanvasRect(), 100);
             }
             
             updateControlStatus() {
@@ -1549,7 +1176,7 @@
                 healthBar.style.width = healthPercent + '%';
                 healthText.textContent = `${player.hp} HP`;
                 
-                // Update sidebar info
+                // Update sidebar info with player color
                 const playerColors = ['#ff5252', '#2196F3', '#ffeb3b', '#e91e63'];
                 document.getElementById('current-player').textContent = this.currentPlayer + 1;
                 document.getElementById('current-player').style.color = playerColors[this.currentPlayer];
@@ -1571,7 +1198,7 @@
                 const rollDiceBtn = document.getElementById('roll-dice');
                 rollDiceBtn.disabled = this.hasRolled || this.isIndoor;
                 
-                // Highlight roll dice button
+                // ADDED: Highlight roll dice button when it's player's turn and hasn't rolled
                 if (!this.hasRolled && !this.isIndoor && this.gameActive) {
                     rollDiceBtn.classList.add('roll-dice-highlight');
                 } else {
@@ -1582,17 +1209,6 @@
                 document.getElementById('shoot').disabled = !this.aiming || this.hasShot;
                 document.getElementById('end-turn').disabled = false;
                 document.getElementById('reset-game').disabled = false;
-                
-                // Update mobile controls visibility
-                if (this.isMobile) {
-                    if (this.aiming) {
-                        document.getElementById('touch-aim-controls').style.display = 'flex';
-                        document.getElementById('mobile-shoot-btn').style.display = 'block';
-                    } else {
-                        document.getElementById('touch-aim-controls').style.display = 'none';
-                        document.getElementById('mobile-shoot-btn').style.display = 'none';
-                    }
-                }
                 
                 // Update status
                 const statusEl = document.getElementById('status-text');
@@ -1620,11 +1236,7 @@
                         }
                     } else {
                         modeEl.innerHTML = `Mode: <span class="status-active">AIMING</span>`;
-                        if (this.isMobile) {
-                            statusEl.textContent = 'Use touch controls or tap on grid to aim, then tap SHOOT';
-                        } else {
-                            statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
-                        }
+                        statusEl.textContent = 'Use arrow keys or WASD to aim, then click "Shoot"';
                     }
                 }
                 
@@ -1694,6 +1306,7 @@
                 }, 2000);
             }
             
+            // NEW: Damage effect visualization (kept because it works)
             showDamageEffect(x, y, damage) {
                 const effect = document.createElement('div');
                 effect.className = 'damage-effect';
@@ -1710,14 +1323,6 @@
                     posY = y * this.TILE_SIZE;
                 }
                 
-                // Adjust for mobile scaling
-                if (this.isMobile && this.canvasRect) {
-                    const scaleX = this.canvasRect.width / this.canvas.width;
-                    const scaleY = this.canvasRect.height / this.canvas.height;
-                    posX = posX * scaleX + this.canvasRect.left;
-                    posY = posY * scaleY + this.canvasRect.top;
-                }
-                
                 effect.style.left = `${posX}px`;
                 effect.style.top = `${posY}px`;
                 
@@ -1727,6 +1332,7 @@
             }
             
             rollDice() {
+                // FIXED: Can only roll once per turn
                 if (this.hasRolled || this.isIndoor) return;
                 
                 const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -1862,7 +1468,7 @@
                 const house = this.houses.find(h => h.x === houseX && h.y === houseY);
                 if (!house) return;
                 
-                // Find door position
+                // Find door position (bottom center)
                 let doorX = -1, doorY = -1;
                 for (let y = 0; y < 8; y++) {
                     for (let x = 0; x < 8; x++) {
@@ -1876,9 +1482,10 @@
                     if (doorX !== -1) break;
                 }
                 
+                // If no door found (shouldn't happen), use default position
                 if (doorX === -1) {
                     doorX = Math.floor(8 / 2) - 1;
-                    doorY = 7;
+                    doorY = 7; // Bottom row
                 }
                 
                 player.inHouse = house;
@@ -1970,6 +1577,7 @@
                 if (house.playersInside.length === 0) {
                     alert(alertMsg + " The house is now empty.");
                 } else if (house.playersInside.length === 1) {
+                    // Only one player left in house
                     const lastPlayerIndex = house.playersInside[0];
                     alert(alertMsg + ` Player ${lastPlayerIndex + 1} remains inside.`);
                 } else {
@@ -1983,8 +1591,10 @@
                 const currentPlayer = this.players[this.currentPlayer];
                 
                 if (currentPlayer.inHouse) {
+                    // Current player is in a house - show indoor view
                     this.switchToIndoorView(currentPlayer.inHouse);
                 } else {
+                    // Current player is outdoors - show outdoor view
                     this.switchToOutdoorView();
                 }
             }
@@ -2021,6 +1631,7 @@
                 // Remove item from map
                 this.map[y][x] = null;
                 
+                // CHANGED: More weapons (70%), less gear (30%)
                 const isWeapon = Math.random() < 0.7;
                 
                 if (isWeapon) {
@@ -2047,11 +1658,12 @@
                         this.map[y][x] = tile;
                     }
                 } else {
-                    // Gear crate
+                    // Gear crate (30% chance)
                     const gearKeys = Object.keys(this.gearTypes);
                     const newGearKey = gearKeys[Math.floor(Math.random() * gearKeys.length)];
                     const newGear = this.gearTypes[newGearKey];
                     
+                    // Special case for medkit - use immediately
                     if (newGearKey === 'medkit') {
                         player.hp = Math.min(player.maxHp, player.hp + newGear.value);
                         alert(`💊 Found Medkit! Healed ${newGear.value} HP. Current HP: ${player.hp}`);
@@ -2062,14 +1674,17 @@
                         );
                         
                         if (confirmPickup) {
+                            // For armor, replace existing armor
                             if (newGearKey === 'armor') {
                                 player.armor = newGear;
                             } else {
+                                // Add to gear array
                                 player.gear.push(newGear);
                             }
                             alert(`Equipped ${newGear.emoji} ${newGear.name}!`);
                             this.playSound(800);
                         } else {
+                            // Put item back
                             this.map[y][x] = tile;
                         }
                     }
@@ -2088,9 +1703,11 @@
                 // Remove item from indoor map
                 house.indoorMap[y][x] = null;
                 
+                // Indoor chests - also more weapons (70%), less gear (30%)
                 const isWeapon = Math.random() < 0.7;
                 
                 if (isWeapon) {
+                    // Weapon from indoor chest
                     const weaponKeys = Object.keys(this.weapons);
                     const currentWeapon = player.weapon;
                     const availableWeapons = weaponKeys.filter(w => w !== currentWeapon);
@@ -2109,9 +1726,11 @@
                         alert(`Equipped ${weapon.name} from house chest! ${weapon.description}`);
                         this.playSound(900);
                     } else {
+                        // Put item back
                         house.indoorMap[y][x] = tile;
                     }
                 } else {
+                    // Gear from indoor chest (30% chance)
                     const gearKeys = Object.keys(this.gearTypes);
                     const newGearKey = gearKeys[Math.floor(Math.random() * gearKeys.length)];
                     const newGear = this.gearTypes[newGearKey];
@@ -2134,6 +1753,7 @@
                             alert(`Equipped ${newGear.emoji} ${newGear.name} from house chest!`);
                             this.playSound(800);
                         } else {
+                            // Put item back
                             house.indoorMap[y][x] = tile;
                         }
                     }
@@ -2143,8 +1763,10 @@
             }
             
             enterAim() {
+                // FIXED: Check if player has already shot AND if they haven't rolled dice yet
                 if (this.aiming || this.hasShot) return;
                 
+                // FIXED: Allow aiming even if hasn't rolled dice yet (for indoor combat)
                 const player = this.players[this.currentPlayer];
                 this.aiming = true;
                 
@@ -2239,30 +1861,13 @@
                     y = this.aim.y * this.TILE_SIZE;
                 }
                 
-                // Adjust for mobile scaling if needed
-                let size = this.TILE_SIZE;
-                if (this.isMobile && this.canvasRect) {
-                    const scaleX = this.canvasRect.width / this.canvas.width;
-                    const scaleY = this.canvasRect.height / this.canvas.height;
-                    x = x * scaleX;
-                    y = y * scaleY;
-                    size = this.TILE_SIZE * Math.min(scaleX, scaleY);
-                }
-                
                 // Create new cursor
                 const cursor = document.createElement('div');
-                cursor.className = this.isMobile ? 'aim-cell mobile' : 'aim-cell';
+                cursor.className = 'aim-cell';
                 cursor.style.left = x + 'px';
                 cursor.style.top = y + 'px';
-                cursor.style.width = size + 'px';
-                cursor.style.height = size + 'px';
-                
-                // Add mobile-specific styling
-                if (this.isMobile) {
-                    cursor.style.border = '4px solid #ffeb3b';
-                    cursor.style.background = 'rgba(255, 235, 59, 0.3)';
-                    cursor.style.boxShadow = '0 0 20px rgba(255, 235, 59, 0.5)';
-                }
+                cursor.style.width = this.TILE_SIZE + 'px';
+                cursor.style.height = this.TILE_SIZE + 'px';
                 
                 this.aimOverlay.appendChild(cursor);
             }
@@ -2308,22 +1913,12 @@
                         posY = y * this.TILE_SIZE;
                     }
                     
-                    // Adjust for mobile scaling
-                    let size = this.TILE_SIZE;
-                    if (this.isMobile && this.canvasRect) {
-                        const scaleX = this.canvasRect.width / this.canvas.width;
-                        const scaleY = this.canvasRect.height / this.canvas.height;
-                        posX = posX * scaleX;
-                        posY = posY * scaleY;
-                        size = this.TILE_SIZE * Math.min(scaleX, scaleY);
-                    }
-                    
                     const cell = document.createElement('div');
                     cell.className = 'shotgun-cell';
                     cell.style.left = posX + 'px';
                     cell.style.top = posY + 'px';
-                    cell.style.width = size + 'px';
-                    cell.style.height = size + 'px';
+                    cell.style.width = this.TILE_SIZE + 'px';
+                    cell.style.height = this.TILE_SIZE + 'px';
                     
                     this.shotgunPreview.appendChild(cell);
                 });
@@ -2359,12 +1954,6 @@
                 this.aiming = false;
                 this.aimOverlay.innerHTML = '';
                 this.shotgunPreview.innerHTML = '';
-                
-                // Hide mobile controls
-                if (this.isMobile) {
-                    document.getElementById('touch-aim-controls').style.display = 'none';
-                    document.getElementById('mobile-shoot-btn').style.display = 'none';
-                }
                 
                 this.updateUI();
                 if (this.isIndoor) {
@@ -2522,7 +2111,7 @@
                 
                 target.hp -= finalDamage;
                 
-                // Show damage effect
+                // Show damage effect (kept because it works)
                 if (this.isIndoor && target.indoorPos) {
                     this.showDamageEffect(
                         target.indoorPos.x,
@@ -2577,10 +2166,10 @@
             endTurn() {
                 if (!confirm("Are you sure you want to end your turn?")) return;
                 
-                // Properly reset all turn state
+                // FIXED: Properly reset all turn state
                 this.movesLeft = 0;
                 this.hasShot = false;
-                this.hasRolled = false;
+                this.hasRolled = false; // CRITICAL FIX: Reset for next player
                 this.aiming = false;
                 this.aim = {
                     x: null,
@@ -2592,12 +2181,6 @@
                 this.aimOverlay.innerHTML = '';
                 this.shotgunPreview.innerHTML = '';
                 
-                // Hide mobile controls
-                if (this.isMobile) {
-                    document.getElementById('touch-aim-controls').style.display = 'none';
-                    document.getElementById('mobile-shoot-btn').style.display = 'none';
-                }
-                
                 // Move to next alive player
                 let attempts = 0;
                 let newPlayerIndex = this.currentPlayer;
@@ -2605,6 +2188,7 @@
                     newPlayerIndex = (newPlayerIndex + 1) % this.PLAYER_COUNT;
                     attempts++;
                     if (attempts > this.PLAYER_COUNT) {
+                        // No alive players found
                         this.gameActive = false;
                         break;
                     }
@@ -2661,7 +2245,7 @@
                     }
                 }
                 
-                // Draw outdoor players
+                // Draw outdoor players with current player highlight
                 this.players.forEach((player, index) => {
                     if (!player.alive || player.inHouse) return;
                     
@@ -2683,7 +2267,7 @@
                     for (let x = 0; x < indoorSize; x++) {
                         const tile = this.currentHouse.indoorMap[y][x];
                         
-                        // Draw tile background
+                        // Draw tile background (wooden floor)
                         this.ctx.fillStyle = '#8b4513';
                         this.ctx.fillRect(
                             x * this.TILE_SIZE + offsetX, 
@@ -2706,6 +2290,7 @@
                             this.ctx.textAlign = 'center';
                             this.ctx.textBaseline = 'middle';
                             
+                            // Different colors for different items
                             if (tile.type === '🧱') this.ctx.fillStyle = '#795548';
                             else if (tile.type === '🛋️') this.ctx.fillStyle = '#ff9800';
                             else if (tile.type === '📺') this.ctx.fillStyle = '#2196F3';
@@ -2714,6 +2299,7 @@
                             else if (tile.type === '📦') this.ctx.fillStyle = '#ffd700';
                             else if (tile.type === '🚪') this.ctx.fillStyle = '#4CAF50';
                             else if (tile.food) {
+                                // Food items - different colors
                                 if (tile.type === '🍎') this.ctx.fillStyle = '#f44336';
                                 else if (tile.type === '🍗') this.ctx.fillStyle = '#ff9800';
                                 else if (tile.type === '🥤') this.ctx.fillStyle = '#2196F3';
@@ -2731,7 +2317,7 @@
                     }
                 }
                 
-                // Draw indoor players
+                // Draw indoor players with current player highlight
                 this.players.forEach((player, index) => {
                     if (!player.alive || player.inHouse !== this.currentHouse) return;
                     
@@ -2842,16 +2428,18 @@
                 );
                 this.ctx.fill();
                 
-                // Draw player emoji
+                // Draw player emoji with pulsing animation if it's this player's turn
                 this.ctx.font = '28px Arial';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillStyle = '#fff';
                 
-                // Pulsing animation for current player
+                // ADDED: Pulsing animation for current player
                 if (index === this.currentPlayer) {
+                    // Save the current context state
                     this.ctx.save();
                     
+                    // Apply pulsing animation
                     const pulseScale = 1 + 0.1 * Math.sin(Date.now() / 200);
                     this.ctx.translate(
                         screenX + this.TILE_SIZE / 2,
@@ -2863,6 +2451,7 @@
                         -(screenY + this.TILE_SIZE / 2)
                     );
                     
+                    // Add glow effect
                     this.ctx.shadowColor = this.getPlayerColor(index);
                     this.ctx.shadowBlur = 15;
                     this.ctx.shadowOffsetX = 0;
@@ -2875,6 +2464,7 @@
                     screenY + this.TILE_SIZE / 2
                 );
                 
+                // Restore context if we applied animation
                 if (index === this.currentPlayer) {
                     this.ctx.restore();
                 }
@@ -2920,6 +2510,7 @@
             }
             
             gameLoop() {
+                // Simple game loop for animations
                 if (this.gameActive) {
                     if (this.isIndoor) {
                         this.drawIndoor();
